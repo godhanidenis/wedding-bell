@@ -5,33 +5,11 @@ import HamburgerIcon from "../../assets/hamburger-icon.svg";
 import { CustomTab, TabPanel } from "../core/CustomMUIComponents";
 
 const SubHeader = () => {
-  const [subHeaderClasses, setSubHeaderClasses] = useState(
-    "bg-colorWhite shadow-md"
-  );
-
   const [value, setValue] = useState(0);
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
-  const changeSubHeader = () => {
-    if (window !== undefined) {
-      let windowHeight = window.scrollY;
-      windowHeight > 20
-        ? setSubHeaderClasses("bg-colorWhite shadow-lg")
-        : setSubHeaderClasses("bg-colorWhite shadow-md");
-    }
-  };
-
-  useEffect(() => {
-    window.addEventListener("scroll", changeSubHeader);
-
-    return () => {
-      window.removeEventListener("scroll", changeSubHeader);
-    };
-  });
-
   const handleMenuOpen = (index, event) => {
-    console.log(event);
     const { currentTarget } = event;
 
     setOpen(true);
@@ -45,9 +23,7 @@ const SubHeader = () => {
   };
 
   return (
-    <div
-      className={` fixed w-full left-0 top-0 transition-all mt-[88px] ${subHeaderClasses}`}
-    >
+    <div className="w-full left-0 top-[83px] sticky bg-colorWhite z-10 shadow-md">
       <div className="container flex gap-48 items-center">
         <button type="button" className="w-5 h-5 relative">
           <Image src={HamburgerIcon} alt="Hamburger Logo" layout="fill" />

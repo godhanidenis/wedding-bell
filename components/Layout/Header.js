@@ -34,25 +34,9 @@ import SubHeader from "./SubHeader";
 const Locations = ["Kamrej", "Adajan", "Mota Varachha", "JakatNaka"];
 
 const Header = () => {
-  const [headerClasses, setHeaderClasses] = useState("bg-colorPrimary");
   const [open, setOpen] = useState(false);
   const [authTypeModal, setauthTypeModal] = useState();
   const [accessToken, setAccessToken] = useState();
-  const changeHeader = () => {
-    if (window !== undefined) {
-      let windowHeight = window.scrollY;
-      windowHeight > 20
-        ? setHeaderClasses("bg-colorPrimary shadow-sm")
-        : setHeaderClasses("bg-colorPrimary");
-    }
-  };
-  useEffect(() => {
-    window.addEventListener("scroll", changeHeader);
-
-    return () => {
-      window.removeEventListener("scroll", changeHeader);
-    };
-  });
 
   useEffect(() => {
     const getAccessToken = localStorage.getItem("token");
@@ -62,9 +46,7 @@ const Header = () => {
 
   return (
     <>
-      <header
-        className={`py-4 fixed w-full left-0 top-0 z-20 transition-all ${headerClasses}`}
-      >
+      <header className="py-4 w-full left-0 top-0 z-20 bg-colorPrimary sticky shadow-sm">
         <div className="container flex items-center justify-between">
           <div className="flex items-center justify-start gap-4">
             <Link href="/">
@@ -77,6 +59,7 @@ const Header = () => {
               </div>
             </Link>
             <Autocomplete
+              size="small"
               disablePortal
               options={Locations}
               sx={{
@@ -104,6 +87,7 @@ const Header = () => {
                     borderRadius: "5px",
                   }}
                   variant="outlined"
+                  size="small"
                 >
                   <OutlinedInput
                     placeholder="Search...."

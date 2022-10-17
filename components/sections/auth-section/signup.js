@@ -12,15 +12,14 @@ import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import InputAdornment from "@mui/material/InputAdornment";
 import { CustomTextField } from "../../core/CustomMUIComponents";
 import { useForm } from "react-hook-form";
-import Alert from "@mui/material/Alert";
 import CloseIcon from "@mui/icons-material/Close";
 import { AuthTypeModal } from "../../core/Enum";
 import { useMutation } from "@apollo/client";
 import CircularProgress from "@mui/material/CircularProgress";
-import { SIGNUP_MUTATION } from "../../../graphql/mutations";
 import PersonIcon from "@mui/icons-material/Person";
 import PhoneIcon from "@mui/icons-material/Phone";
 import { toast } from "react-toastify";
+import { SIGNUP_MUTATION } from "../../../graphql/mutations/authMutations";
 
 export default function SignUp({ changeAuthModalType, handleClose }) {
   const [asVendor, setAsVendor] = useState(false);

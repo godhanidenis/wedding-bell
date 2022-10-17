@@ -27,7 +27,7 @@ export const SIGNUP_MUTATION = gql`
 
 export const SIGNIN_MUTATION = gql`
   mutation signIn($username: String!, $password: String!, $type: String!) {
-    signIn(input: { username: $username, password: $password, type: $type }) {
+    signIn(userInfo: { username: $username, password: $password, type: $type }) {
       token
       message
     }

@@ -1,6 +1,11 @@
-export function requestGetUsers() {
-  return axios.request({
-    method: "get",
-    url: `${appConfig.appUrl}/admin_panel/users/`,
-  });
+import { getProducts } from "../../../graphql/queries/productQueries";
+import { getShops } from "../../../graphql/queries/shopQueries";
+
+export function requestGetProducts(product) {
+  console.log("first", product);
+  return getProducts(product);
+}
+
+export function requestGetShops() {
+  return getShops();
 }

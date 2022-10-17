@@ -16,9 +16,9 @@ import { Alert } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { AuthTypeModal } from "../../core/Enum";
 import CircularProgress from "@mui/material/CircularProgress";
-import { SIGNIN_MUTATION } from "../../../graphql/mutations";
 import { useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
+import { SIGNIN_MUTATION } from "../../../graphql/mutations/authMutations";
 
 export default function SignIn({ changeAuthModalType, handleClose }) {
   const [asVendor, setAsVendor] = useState(false);

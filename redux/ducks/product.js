@@ -2,8 +2,9 @@ export const LOAD_PRODUCT_START = "LOAD_PRODUCT_START";
 export const LOAD_PRODUCT_SUCCESS = "LOAD_PRODUCT_SUCCESS";
 export const LOAD_PRODUCT_ERROR = "LOAD_PRODUCT_ERROR";
 
-export const loadProductsStart = () => ({
+export const loadProductsStart = (product) => ({
   type: LOAD_PRODUCT_START,
+  payload: product,
 });
 
 export const loadProductsSuccess = (products) => ({
@@ -17,12 +18,15 @@ export const loadProductsError = (error) => ({
 });
 
 const initialState = {
-  products: [],
+  productsLimit: 0,
+  productsCount: 0,
+  numOfPages: 0,
+  productsData: [],
   loading: false,
   error: "",
 };
 
-const usersReducer = (state = initialState, action) => {
+const productsReducer = (state = initialState, action) => {
   switch (action.type) {
     case LOAD_PRODUCT_START:
       return {
@@ -31,10 +35,15 @@ const usersReducer = (state = initialState, action) => {
       };
 
     case LOAD_PRODUCT_SUCCESS:
+      const tempProduct = [...state.productsData, ...action.payload.data];
+
       return {
         ...state,
         loading: false,
-        products: action.payload,
+        productsLimit: action.payload.limit,
+        productsCount: action.payload.count,
+        numOfPages: action.payload.noOfPages,
+        productsData: tempProduct,
       };
 
     case LOAD_PRODUCT_ERROR:
@@ -43,7 +52,10 @@ const usersReducer = (state = initialState, action) => {
         loading: false,
         error: action.payload,
       };
+
     default:
       return state;
   }
 };
+
+export default productsReducer;

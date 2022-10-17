@@ -1,7 +1,7 @@
 const DirectoryHero = ({ title, bgImg }) => {
   return (
     <section
-      className="py-24 md:py-36 mt-[136px] bg-cover bg-no-repeat"
+      className="py-24 md:py-36 bg-cover bg-no-repeat"
       style={{ backgroundImage: `url(${bgImg})` }}
     >
       <div className="container">
