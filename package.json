@@ -20,7 +20,16 @@
     "graphql": "^16.6.0",
     "next": "12.3.1",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "react-hook-form": "^7.38.0",
+    "react-image-magnify": "^2.7.4",
+    "react-infinite-scroll-component": "^6.1.0",
+    "react-redux": "^8.0.4",
+    "react-slick": "^0.29.0",
+    "react-toastify": "^9.0.8",
+    "redux-logger": "^3.0.6",
+    "redux-saga": "^1.2.1",
+    "slick-carousel": "^1.8.1"
   },
   "devDependencies": {
     "@babel/preset-react": "^7.18.6",
