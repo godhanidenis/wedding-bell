@@ -65,7 +65,7 @@ const LandingPage = () => {
   };
 
   useEffect(() => {
-    getProductsList();
+    getMoreProductsList();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, pageSkip]);
 
