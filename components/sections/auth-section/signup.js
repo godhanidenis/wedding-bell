@@ -19,7 +19,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import PersonIcon from "@mui/icons-material/Person";
 import PhoneIcon from "@mui/icons-material/Phone";
 import { toast } from "react-toastify";
-import { SIGNUP_MUTATION } from "../../../graphql/mutations/authMutations";
+import { signUp } from "../../../graphql/mutations/authMutations";
 
 export default function SignUp({ changeAuthModalType, handleClose }) {
   const [asVendor, setAsVendor] = useState(false);
@@ -27,8 +27,6 @@ export default function SignUp({ changeAuthModalType, handleClose }) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
-
-  const [signUp] = useMutation(SIGNUP_MUTATION);
 
   const {
     register,
@@ -40,38 +38,31 @@ export default function SignUp({ changeAuthModalType, handleClose }) {
     getValues,
   } = useForm();
   const onSubmit = (data) => {
-    console.log("data", data);
     setLoading(true);
     signUp(
       asVendor
         ? {
-            variables: {
-              first_name: data.first_name,
-              last_name: data.last_name,
-              user_contact: data.user_contact,
-              user_password: data.user_password,
-              user_type: "vendor",
-              user_email: data.user_email,
-            },
+            first_name: data.first_name,
+            last_name: data.last_name,
+            user_contact: data.user_contact,
+            user_password: data.user_password,
+            user_type: "vendor",
+            user_email: data.user_email,
           }
         : {
-            variables: {
-              first_name: data.first_name,
-              last_name: data.last_name,
-              user_contact: data.user_contact,
-              user_password: data.user_password,
-              user_type: "customer",
-            },
+            first_name: data.first_name,
+            last_name: data.last_name,
+            user_contact: data.user_contact,
+            user_password: data.user_password,
+            user_type: "customer",
           }
     ).then(
       (res) => {
-        console.log(res.data.signUp);
         toast.success(res.data.signUp.message, { theme: "colored" });
         localStorage.setItem("token", res.data.signUp.token);
         handleClose();
       },
       (error) => {
-        console.log("error::", error.message);
         setLoading(false);
         toast.error(error.message, { theme: "colored" });
       }

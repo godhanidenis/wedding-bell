@@ -1,54 +1,48 @@
 import React from "react";
-import {
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  IconButton,
-  InputAdornment,
-  OutlinedInput,
-} from "@mui/material";
+import { Autocomplete, Checkbox, TextField } from "@mui/material";
 import CardInteractive from "../CardInteractive/CardInteractive";
-import SearchIcon from "@mui/icons-material/Search";
+
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import { useSelector } from "react-redux";
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const ProductByShopFilter = () => {
-  const shopsList = [
-    { label: "All", value: "All" },
-    { label: "MitVin", value: "MitVin" },
-    { label: "WedMen", value: "WedMen" },
-    { label: "KingsMen", value: "KingsMen" },
-    { label: "GJ-5", value: "GJ-5" },
-    { label: "Mahi", value: "Mahi" },
-  ];
+  const { shops } = useSelector((state) => state.shops);
   return (
     <CardInteractive
       cardTitle="Shops"
       bottomComponent={
         <>
-          <OutlinedInput
-            className="w-full"
-            onKeyPress={(ev) => {
-              if (ev.key === "Enter") {
-              }
+          <Autocomplete
+            multiple
+            options={shops}
+            disableCloseOnSelect
+            getOptionLabel={(option) => {
+              const a = option.branch_info.filter(
+                (itm) => itm.branch_type === "main"
+              );
+              return a[0].branch_name;
             }}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton>
-                  <SearchIcon className="hover:text-[#95539B]" />
-                </IconButton>
-              </InputAdornment>
-            }
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                <Checkbox
+                  icon={icon}
+                  checkedIcon={checkedIcon}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                {option.branch_info.map((itm) =>
+                  itm.branch_type === "main" ? itm.branch_name : ""
+                )}
+              </li>
+            )}
+            renderInput={(params) => (
+              <TextField {...params} label="Shops" placeholder="Shop Name" />
+            )}
           />
-
-          <FormGroup className="mt-4">
-            {shopsList.map((itm) => (
-              <FormControlLabel
-                key={itm.value}
-                control={<Checkbox />}
-                label={itm.label}
-                value={itm.value}
-              />
-            ))}
-          </FormGroup>
         </>
       }
     />

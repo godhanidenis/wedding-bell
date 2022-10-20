@@ -40,27 +40,7 @@ const UpdatePassword = () => {
   } = useForm();
 
   const onSubmit = async (data) => {
-    console.log("dataaa", data);
-    // setLoading(true);
-
-    // UpdatePasswords({
-    //   token: token,
-    //   password: data.password,
-    // }).then(
-    //   (res) => {
-    //     console.log("response", res);
-    //     setLoading(false);
-    //     setSuccess(true);
-    //     setAlertMsg(res.data.detail);
-    //   },
-    //   (error) => {
-    //     console.log("error", error);
-    //     setLoading(false);
-
-    //     setInvalid(true);
-    //     setAlertMsg(error.response.data.detail);
-    //   }
-    // );
+    console.log("data", data);
   };
   const onError = (errors) => console.log("Errors Occurred !! :", errors);
 

@@ -3,30 +3,24 @@ import { Autocomplete, Checkbox, TextField } from "@mui/material";
 import CardInteractive from "../CardInteractive/CardInteractive";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import { useSelector } from "react-redux";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-const ProductColorFilter = () => {
-  const colorsList = [
-    { label: "Red", value: "red" },
-    { label: "Pink", value: "pink" },
-    { label: "Yellow", value: "yellow" },
-    { label: "Wine", value: "wine" },
-    { label: "Purple", value: "purple" },
-    { label: "Blue", value: "blue" },
-    { label: "Orange", value: "orange" },
-  ];
+const ShopByLocation = () => {
+  const { areaLists } = useSelector((state) => state.areaLists);
+
   return (
     <CardInteractive
-      cardTitle="Colors"
+      cardTitle="Locations"
       bottomComponent={
         <>
           <Autocomplete
             multiple
-            options={colorsList}
+            options={areaLists}
             disableCloseOnSelect
-            getOptionLabel={(option) => option.label}
+            getOptionLabel={(option) => option.area}
             renderOption={(props, option, { selected }) => (
               <li {...props}>
                 <Checkbox
@@ -35,11 +29,15 @@ const ProductColorFilter = () => {
                   style={{ marginRight: 8 }}
                   checked={selected}
                 />
-                {option.label}
+                {option.area}
               </li>
             )}
             renderInput={(params) => (
-              <TextField {...params} label="Colors" placeholder="color" />
+              <TextField
+                {...params}
+                label="Area Location"
+                placeholder="Location"
+              />
             )}
           />
         </>
@@ -48,4 +46,4 @@ const ProductColorFilter = () => {
   );
 };
 
-export default ProductColorFilter;
+export default ShopByLocation;

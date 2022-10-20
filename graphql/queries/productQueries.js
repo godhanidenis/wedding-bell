@@ -5,11 +5,19 @@ export const getProducts = async (payload) => {
   const result = await client.query({
     query: gql`
       query ProductList(
-        $search: String
         $pageData: paginationInput!
+        $search: String
         $filter: productFilterInput
+        $pinCode: String
+        $sort: String
       ) {
-        productList(search: $search, pageData: $pageData, filter: $filter) {
+        productList(
+          pageData: $pageData
+          search: $search
+          filter: $filter
+          pinCode: $pinCode
+          sort: $sort
+        ) {
           data {
             id
             product_name
@@ -28,29 +36,47 @@ export const getProducts = async (payload) => {
             }
             branchInfo {
               id
-
-              manager_contact
-              manager_name
-              branch_type
               shop_id
-              flag
+              shop_info {
+                id
+                user_id
+                shop_logo
+                shop_cover_image
+                shop_images {
+                  links
+                }
+                shop_video
+                is_live
+                flag
+                form_steps
+                shop_social_link {
+                  facebook
+                  instagram
+                  website
+                }
+                shopFollowerCount
+              }
               branch_name
               branch_address
               branch_pinCode
+              manager_name
+              manager_contact
               branch_time {
                 week
                 open_time
                 close_time
                 is_close
               }
+              branch_type
+              flag
             }
             flag
             productLikes
             productViews
           }
+          count
           limit
           noOfPages
-          count
         }
       }
     `,
@@ -58,6 +84,8 @@ export const getProducts = async (payload) => {
       search: payload.search,
       pageData: payload.pageData,
       filter: payload.filter,
+      pinCode: payload.pinCode,
+      sort: payload.sort,
     },
   });
 

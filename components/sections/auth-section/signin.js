@@ -18,7 +18,7 @@ import { AuthTypeModal } from "../../core/Enum";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
-import { SIGNIN_MUTATION } from "../../../graphql/mutations/authMutations";
+import { signIn } from "../../../graphql/mutations/authMutations";
 
 export default function SignIn({ changeAuthModalType, handleClose }) {
   const [asVendor, setAsVendor] = useState(false);
@@ -33,27 +33,20 @@ export default function SignIn({ changeAuthModalType, handleClose }) {
     watch,
     getValues,
   } = useForm();
-  const [signIn] = useMutation(SIGNIN_MUTATION);
 
   const onSubmit = (data) => {
-    console.log("data", data);
-
     setLoading(true);
     signIn({
-      variables: {
-        username: data.username,
-        password: data.password,
-        type: asVendor ? "vendor" : "customer",
-      },
+      username: data.username,
+      password: data.password,
+      type: asVendor ? "vendor" : "customer",
     }).then(
       (res) => {
-        console.log(res.data.signIn);
         toast.success(res.data.signIn.message, { theme: "colored" });
         localStorage.setItem("token", res.data.signIn.token);
         handleClose();
       },
       (error) => {
-        console.log("error::", error.message);
         setLoading(false);
         toast.error(error.message, { theme: "colored" });
       }
