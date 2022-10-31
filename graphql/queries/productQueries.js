@@ -2,6 +2,7 @@ import { gql } from "@apollo/client";
 import client from "../apollo-client";
 
 export const getProducts = async (payload) => {
+  console.log("payyy", payload);
   const result = await client.query({
     query: gql`
       query ProductList(

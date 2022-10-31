@@ -1,10 +1,19 @@
 export const LOAD_PRODUCT_START = "LOAD_PRODUCT_START";
 export const LOAD_PRODUCT_SUCCESS = "LOAD_PRODUCT_SUCCESS";
 export const LOAD_PRODUCT_ERROR = "LOAD_PRODUCT_ERROR";
+
 export const LOAD_MORE_PRODUCT_START = "LOAD_MORE_PRODUCT_START";
 export const LOAD_MORE_PRODUCT_SUCCESS = "LOAD_MORE_PRODUCT_SUCCESS";
 export const LOAD_MORE_PRODUCT_ERROR = "LOAD_MORE_PRODUCT_ERROR";
+
 export const EMPTY_PRODUCTS = "EMPTY_PRODUCTS";
+
+export const FILTER_BY_CATEGORY = "FILTER_BY_CATEGORY";
+
+export const filterByCategory = (filter) => ({
+  type: FILTER_BY_CATEGORY,
+  payload: filter,
+});
 
 export const loadProductsStart = (product) => ({
   type: LOAD_PRODUCT_START,
@@ -87,6 +96,13 @@ const productsReducer = (state = initialState, action) => {
         productsLimit: 0,
         productsCount: 0,
         numOfPages: 0,
+        productsData: [],
+      };
+
+    case FILTER_BY_CATEGORY:
+      console.log(":::::ddd", action.payload);
+      return {
+        ...state,
         productsData: [],
       };
 
