@@ -5,7 +5,6 @@ import Link from "next/link";
 import ProductImage from "../../../assets/product-image.png";
 import heartIcon from "../../../assets/svg/heart.svg";
 import Slider from "react-slick";
-
 const ProductCard = ({ product }) => {
   const items = [0, 1, 2].map((itm) => {
     return (
@@ -14,7 +13,8 @@ const ProductCard = ({ product }) => {
       </div>
     );
   });
-
+  const shopId =product.branchInfo.shop_id 
+  console.log("LLLLLLLLLLL",product.branchInfo.shop_id )
   const settings = {
     infinite: true,
     speed: 500,
@@ -55,9 +55,11 @@ const ProductCard = ({ product }) => {
             />
           </div>
           <div className="flex flex-col justify-center">
+          <Link href={`/shpodetails/${shopId}`}>
             <p className="text-[#000000] text-base font-semibold cursor-pointer hover:text-colorPrimary">
-              {product.branchInfo.branch_name || "ShopeName"}
+                {product.branchInfo.branch_name || "ShopeName"} 
             </p>
+            </Link>
             <p className="text-[#888888] text-sm font-normal">25 days ago</p>
           </div>
         </div>
