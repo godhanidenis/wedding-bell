@@ -2,22 +2,21 @@ import { gql } from "@apollo/client";
 import client from "../apollo-client";
 
 export const getProducts = async (payload) => {
-  console.log("payyy", payload);
   const result = await client.query({
     query: gql`
       query ProductList(
         $pageData: paginationInput!
         $search: String
         $filter: productFilterInput
-        $pinCode: String
         $sort: String
+        $shopId: [String]
       ) {
         productList(
           pageData: $pageData
           search: $search
           filter: $filter
-          pinCode: $pinCode
           sort: $sort
+          shop_id: $shopId
         ) {
           data {
             id
@@ -56,8 +55,20 @@ export const getProducts = async (payload) => {
                   website
                 }
                 shopFollowerCount
+                shopReviewCount
+                shop_name
+                shop_rating
+                shop_review {
+                  id
+                  shop_id
+                  user_id
+                  stars
+                  message
+                  flag
+                }
+                shop_type
               }
-              branch_name
+
               branch_address
               branch_pinCode
               manager_name
@@ -74,6 +85,7 @@ export const getProducts = async (payload) => {
             flag
             productLikes
             productViews
+            product_color
           }
           count
           limit
@@ -85,7 +97,7 @@ export const getProducts = async (payload) => {
       search: payload.search,
       pageData: payload.pageData,
       filter: payload.filter,
-      pinCode: payload.pinCode,
+      shopId: payload.shopId,
       sort: payload.sort,
     },
   });

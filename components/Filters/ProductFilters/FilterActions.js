@@ -12,12 +12,8 @@ const FilterActions = ({ byShop, setByShop }) => {
   return (
     <>
       <div className="mb-2 flex justify-start gap-5">
-        <button className="bg-colorPrimary px-5 py-1 rounded-md text-colorWhite">
+        <button className="bg-colorPrimary px-7 py-1 rounded text-colorWhite">
           Filter By
-        </button>
-
-        <button className="bg-colorPrimary px-5 py-1 rounded-md text-colorWhite">
-          Reset
         </button>
       </div>
       <div className="flex items-center gap-2">

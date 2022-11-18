@@ -181,7 +181,7 @@ export default function ProductDetail() {
                 }
               }} startIcon={<Image src={whatsapp} alt="sheareicon" style={{ bgcolor: "#FFFFFF" }} />}>
                 <Typography color="black" sx={{ fontWeight: 600, textTransform: "none" }}>
-                  <a href="https://api.whatsapp.com/send?phone=6354898341">Contact on whatsapp</a> </Typography>
+                  <a href="https://api.whatsapp.com/send?phone=7043602265">Contact on whatsapp</a> </Typography>
               </Button>
               or
             </Box>

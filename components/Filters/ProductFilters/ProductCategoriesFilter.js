@@ -13,62 +13,77 @@ import CardInteractive from "../CardInteractive/CardInteractive";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { useDispatch, useSelector } from "react-redux";
-import { emptyData, loadProductsStart } from "../../../redux/ducks/product";
+import { changeAppliedProductsFilters } from "../../../redux/ducks/productsFilters";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-const ProductCategoriesFilter = ({ setPageSkip }) => {
-  const [emptyState, setEmptyState] = useState();
+const ProductCategoriesFilter = ({ setProductPageSkip }) => {
   const { categories } = useSelector((state) => state.categories);
+
+  const [menCategoryLabel, setMenCategoryLabel] = useState([]);
+  const [womenCategoryLabel, setWomenCategoryLabel] = useState([]);
+
+  const [selectedMenCat, setSelectedMenCat] = useState([]);
+  const [selectedWomenCat, setSelectedWomenCat] = useState([]);
+
+  const [menSelectedData, setMenSelectedData] = useState([]);
+  const [womenSelectedData, setWomenSelectedData] = useState([]);
 
   const [categoryId, setCategoryId] = useState([]);
 
-  const [menCat, setMenCat] = useState([]);
-  const [womenCat, setWomenCat] = useState([]);
+  const [abc, setAbc] = useState(false);
 
   const dispatch = useDispatch();
+  const productsFiltersReducer = useSelector(
+    (state) => state.productsFiltersReducer
+  );
 
   useEffect(() => {
-    setCategoryId([...menCat, ...womenCat]);
-  }, [menCat, setCategoryId, womenCat]);
+    setCategoryId([...menSelectedData, ...womenSelectedData]);
+  }, [menSelectedData, setCategoryId, womenSelectedData]);
 
-  const getFilterProducts = () => {
-    if (categoryId.length > 0) {
-      setEmptyState(true);
+  useEffect(() => {
+    abc &&
       dispatch(
-        loadProductsStart({
-          search: "",
-          pageData: {
-            skip: 0,
-            limit: 50,
+        changeAppliedProductsFilters({
+          key: "categoryId",
+          value: {
+            selectedValue: categoryId,
           },
-          filter: { category_id: categoryId },
-          pinCode: null,
         })
       );
-    }
-  };
-  console.log("emptyState", emptyState);
+  }, [abc, categoryId, dispatch]);
+
   useEffect(() => {
-    console.log("categoryId.length :", categoryId.length)
-    if (categoryId.length > 0) {
-      getFilterProducts();
-    } else {
-      // setEmptyState(false);
-      // setPageSkip(0);
-      setPageSkip(0);
-      // dispatch(emptyData());
-    }
+    productsFiltersReducer.appliedProductsFilters &&
+      setSelectedMenCat(
+        productsFiltersReducer.appliedProductsFilters.categoryId.selectedValue
+          .map((itm) => categories.find((i) => i.id === itm))
+          .filter((ele) => ele.category_type === "Men")
+          .map((i) => i.category_name)
+      );
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, categoryId.length]);
+    setSelectedWomenCat(
+      productsFiltersReducer.appliedProductsFilters.categoryId.selectedValue
+        .map((itm) => categories.find((i) => i.id === itm))
+        .filter((ele) => ele.category_type === "Women")
+        .map((i) => i.category_name)
+    );
+  }, [categories, productsFiltersReducer.appliedProductsFilters]);
 
-  // useEffect(() => {
-  //   if (emptyState === false) {
-  //     dispatch(emptyData());
-  //   }
-  // }, [dispatch, emptyState]);
+  useEffect(() => {
+    setMenCategoryLabel(
+      categories
+        .filter((itm) => itm.category_type === "Men")
+        .map((i) => i.category_name)
+    );
+    setWomenCategoryLabel(
+      categories
+        .filter((itm) => itm.category_type === "Women")
+        .map((i) => i.category_name)
+    );
+  }, [categories]);
 
   return (
     <CardInteractive
@@ -82,16 +97,23 @@ const ProductCategoriesFilter = ({ setPageSkip }) => {
             <AccordionDetails>
               <Autocomplete
                 multiple
-                options={categories}
+                options={menCategoryLabel}
                 disableCloseOnSelect
-                getOptionLabel={(option) =>
-                  option.category_type === "Men" ? option.category_name : ""
-                }
+                getOptionLabel={(option) => option}
                 onChange={(event, newValue) => {
-                  setMenCat(newValue.map((itm) => itm.id));
+                  setSelectedMenCat(newValue);
+                  setProductPageSkip(0);
+                  setAbc(true);
+                  setMenSelectedData(
+                    newValue.map(
+                      (itm) =>
+                        categories.find((ele) => ele.category_name === itm)?.id
+                    )
+                  );
                 }}
+                value={selectedMenCat}
                 renderOption={(props, option, { selected }) =>
-                  option.category_type === "Men" && (
+                  option && (
                     <li {...props}>
                       <Checkbox
                         icon={icon}
@@ -99,7 +121,7 @@ const ProductCategoriesFilter = ({ setPageSkip }) => {
                         style={{ marginRight: 8 }}
                         checked={selected}
                       />
-                      {option.category_name}
+                      {option}
                     </li>
                   )
                 }
@@ -121,16 +143,23 @@ const ProductCategoriesFilter = ({ setPageSkip }) => {
             <AccordionDetails>
               <Autocomplete
                 multiple
-                options={categories}
+                options={womenCategoryLabel}
                 disableCloseOnSelect
-                getOptionLabel={(option) =>
-                  option.category_type === "Women" ? option.category_name : ""
-                }
+                getOptionLabel={(option) => option}
                 onChange={(event, newValue) => {
-                  setWomenCat(newValue.map((itm) => itm.id));
+                  setSelectedWomenCat(newValue);
+                  setProductPageSkip(0);
+                  setAbc(true);
+                  setWomenSelectedData(
+                    newValue.map(
+                      (itm) =>
+                        categories.find((ele) => ele.category_name === itm)?.id
+                    )
+                  );
                 }}
+                value={selectedWomenCat}
                 renderOption={(props, option, { selected }) =>
-                  option.category_type === "Women" && (
+                  option && (
                     <li {...props}>
                       <Checkbox
                         icon={icon}
@@ -138,7 +167,7 @@ const ProductCategoriesFilter = ({ setPageSkip }) => {
                         style={{ marginRight: 8 }}
                         checked={selected}
                       />
-                      {option.category_name}
+                      {option}
                     </li>
                   )
                 }

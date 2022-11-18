@@ -5,7 +5,9 @@ import createSagaMiddleware from "redux-saga";
 import areaListsReducer from "./ducks/areaLists";
 import categoriesReducer from "./ducks/categories";
 import productsReducer from "./ducks/product";
+import productsFiltersReducer from "./ducks/productsFilters";
 import shopsReducer from "./ducks/shop";
+import shopsFiltersReducer from "./ducks/shopsFilters";
 import watcherSaga from "./sagas/rootSaga";
 
 const reducer = combineReducers({
@@ -13,6 +15,8 @@ const reducer = combineReducers({
   shops: shopsReducer,
   categories: categoriesReducer,
   areaLists: areaListsReducer,
+  productsFiltersReducer: productsFiltersReducer,
+  shopsFiltersReducer: shopsFiltersReducer,
 });
 
 const sagaMiddleWares = createSagaMiddleware();

@@ -3,16 +3,19 @@ import React, { useEffect, useState } from "react";
 import DirectoryHero from "../../DirectoryHero/DirectoryHero";
 import LandingBg from "../../../assets/landing-page-img.png";
 import { useDispatch, useSelector } from "react-redux";
-import { loadMoreProductsStart } from "../../../redux/ducks/product";
-import Filter from "../../Filters/ProductFilters";
+import {
+  loadMoreProductsStart,
+  loadProductsStart,
+} from "../../../redux/ducks/product";
 import UpperFilter from "../../Filters/ProductFilters/UpperFilter";
 import ProductCard from "../product-section/ProductCard";
-import { loadShopsStart } from "../../../redux/ducks/shop";
+import { loadMoreShopsStart, loadShopsStart } from "../../../redux/ducks/shop";
 import InfiniteScroll from "react-infinite-scroll-component";
 import CircularProgress from "@mui/material/CircularProgress";
 import ShopCard from "../shop-section/ShopCard";
 import { loadCategoriesStart } from "../../../redux/ducks/categories";
 import { loadAreaListsStart } from "../../../redux/ducks/areaLists";
+import Filter from "../../Filters";
 
 const LandingPage = () => {
   const dispatch = useDispatch();
@@ -24,53 +27,132 @@ const LandingPage = () => {
     loading,
     error,
   } = useSelector((state) => state.products);
-  const { shops } = useSelector((state) => state.shops);
+  // const { shops } = useSelector((state) => state.shops);
 
-  const [pageSkip, setPageSkip] = useState(0);
+  const {
+    shopsLimit,
+    shopsCount,
+    numOfPages: shopNumOfPages,
+    shopsData,
+    loading: shopLoading,
+    error: shopError,
+  } = useSelector((state) => state.shops);
 
   const [byShop, setByShop] = useState(false);
-  console.log("pageSkip", pageSkip);
 
-  console.log("productsData", productsData);
+  const productsFiltersReducer = useSelector(
+    (state) => state.productsFiltersReducer
+  );
+  const shopsFiltersReducer = useSelector((state) => state.shopsFiltersReducer);
+
+  const [productPageSkip, setProductPageSkip] = useState(0);
+  const [shopPageSkip, setShopPageSkip] = useState(0);
+
   const getMoreProductsList = () => {
     dispatch(
       loadMoreProductsStart({
         search: "",
         pageData: {
-          skip: pageSkip,
+          skip: productPageSkip,
           limit: 6,
         },
-        filter: {},
-        pinCode: null,
-        // sort: "",
+        filter: {
+          category_id:
+            productsFiltersReducer.appliedProductsFilters.categoryId
+              .selectedValue,
+          product_color:
+            productsFiltersReducer.appliedProductsFilters.productColor
+              .selectedValue,
+        },
+        shopId:
+          productsFiltersReducer.appliedProductsFilters.shopId.selectedValue,
+        sort: productsFiltersReducer.sortFilters.sortType.selectedValue,
       })
     );
   };
 
-  const getFilterProducts = () => {
-    if (categoryId.length > 0) {
-      setEmptyState(true);
-      dispatch(
-        loadProductsStart({
-          search: "",
-          pageData: {
-            skip: 0,
-            limit: 50,
-          },
-          filter: { category_id: categoryId },
-          pinCode: null,
-        })
-      );
-    }
+  const getAllProducts = () => {
+    dispatch(
+      loadProductsStart({
+        search: "",
+        pageData: {
+          skip: productPageSkip,
+          limit: 6,
+        },
+        filter: {
+          category_id:
+            productsFiltersReducer.appliedProductsFilters.categoryId
+              .selectedValue,
+          product_color:
+            productsFiltersReducer.appliedProductsFilters.productColor
+              .selectedValue,
+        },
+        shopId:
+          productsFiltersReducer.appliedProductsFilters.shopId.selectedValue,
+        sort: productsFiltersReducer.sortFilters.sortType.selectedValue,
+      })
+    );
+  };
+
+  const getMoreShopsList = () => {
+    dispatch(
+      loadMoreShopsStart({
+        pageData: {
+          skip: shopPageSkip,
+          limit: 6,
+        },
+        area: shopsFiltersReducer.appliedShopsFilters.locations.selectedValue,
+        sort: shopsFiltersReducer.sortFilters.sortType.selectedValue,
+      })
+    );
+  };
+
+  const getAllShops = () => {
+    dispatch(
+      loadShopsStart({
+        pageData: {
+          skip: shopPageSkip,
+          limit: 6,
+        },
+        area: shopsFiltersReducer.appliedShopsFilters.locations.selectedValue,
+        sort: shopsFiltersReducer.sortFilters.sortType.selectedValue,
+      })
+    );
   };
 
   useEffect(() => {
-    getMoreProductsList();
+    getAllProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch, pageSkip]);
+  }, [
+    dispatch,
+    productsFiltersReducer.appliedProductsFilters,
+    productsFiltersReducer.sortFilters,
+  ]);
 
   useEffect(() => {
-    dispatch(loadShopsStart());
+    if (productPageSkip > 0) {
+      getMoreProductsList();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, productPageSkip]);
+
+  useEffect(() => {
+    getAllShops();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    dispatch,
+    shopsFiltersReducer.appliedShopsFilters,
+    shopsFiltersReducer.sortFilters,
+  ]);
+
+  useEffect(() => {
+    if (shopPageSkip > 0) {
+      getMoreShopsList();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, shopPageSkip]);
+
+  useEffect(() => {
     dispatch(loadCategoriesStart());
     dispatch(loadAreaListsStart());
   }, [dispatch]);
@@ -84,12 +166,17 @@ const LandingPage = () => {
           <Filter
             byShop={byShop}
             setByShop={setByShop}
-            setPageSkip={setPageSkip}
+            setProductPageSkip={setProductPageSkip}
+            setShopPageSkip={setShopPageSkip}
           />
         </div>
         <div className="col-span-8 lg:col-span-6 bg-[#F5F5F5] rounded-lg">
           <div className="container">
-            <UpperFilter setPageSkip={setPageSkip} />
+            <UpperFilter
+              byShop={byShop}
+              setProductPageSkip={setProductPageSkip}
+              setShopPageSkip={setShopPageSkip}
+            />
 
             {!byShop ? (
               <>
@@ -99,7 +186,7 @@ const LandingPage = () => {
                 <InfiniteScroll
                   className="!overflow-hidden p-0.5"
                   dataLength={productsData.length}
-                  next={() => setPageSkip(pageSkip + 6)}
+                  next={() => setProductPageSkip(productPageSkip + 6)}
                   hasMore={productsData.length < productsCount}
                   loader={
                     <div className="text-center">
@@ -120,10 +207,25 @@ const LandingPage = () => {
                 <p className="font-bold text-2xl text-colorBlack">
                   Special Shops
                 </p>
-                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 place-items-center mb-10">
-                  {shops &&
-                    shops.map((shop) => <ShopCard key={shop.id} shop={shop} />)}
-                </div>
+
+                <InfiniteScroll
+                  className="!overflow-hidden p-0.5"
+                  dataLength={shopsData.length}
+                  next={() => setShopPageSkip(shopPageSkip + 6)}
+                  hasMore={shopsData.length < shopsCount}
+                  loader={
+                    <div className="text-center">
+                      <CircularProgress />
+                    </div>
+                  }
+                >
+                  <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 place-items-center mb-10">
+                    {shopsData &&
+                      shopsData.map((shop) => (
+                        <ShopCard key={shop.id} shop={shop} />
+                      ))}
+                  </div>
+                </InfiniteScroll>
               </>
             )}
           </div>

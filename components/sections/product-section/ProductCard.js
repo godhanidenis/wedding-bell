@@ -2,11 +2,15 @@ import React from "react";
 import { Avatar } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
-import heartIcon from "../../../assets/svg/heart.svg";
 import Slider from "react-slick";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { useSelector } from "react-redux";
 
 const ProductCard = ({ product }) => {
+  const productsFiltersReducer = useSelector(
+    (state) => state.productsFiltersReducer
+  );
+
   const items = [
     product.product_image.back,
     product.product_image.front,
@@ -16,8 +20,8 @@ const ProductCard = ({ product }) => {
       <Image
         src={itm}
         alt={product.name}
-        width={200}
-        height={250}
+        width={250}
+        height={productsFiltersReducer.productLayout === "list" ? 300 : 400}
         className="rounded"
         key={itm}
       />
@@ -43,7 +47,6 @@ const ProductCard = ({ product }) => {
           <button
             className={`w-10 h-10 rounded-full transition-colors bg-[#f5f5f5] duration-300 hover:opacity-80  absolute top-0 right-0`}
           >
-            {/* <Image src={heartIcon} alt="heart" width="12" height="12" /> */}
             <FavoriteBorderIcon fontSize="small" />
           </button>
 
@@ -61,7 +64,7 @@ const ProductCard = ({ product }) => {
           <div className="flex justify-center items-center">
             <Avatar
               alt="Shop Logo"
-              src={product.branchInfo.shop_info.shop_logo}
+              src={product.branchInfo.shop_info?.shop_logo}
               layout="fill"
             />
           </div>
@@ -72,16 +75,23 @@ const ProductCard = ({ product }) => {
             <p className="text-[#888888] text-sm font-normal">25 days ago</p>
           </div>
         </div>
+        {productsFiltersReducer.productLayout === "list" && (
+          <div>
+            <p className="font-semibold text-colorBlack text-lg mt-2">
+              {product.product_name}
+            </p>
+            <p className="text-[#888888] font-normal text-sm">
+              {product.product_description}
+            </p>
+            <p className="font-semibold text-colorBlack text-lg mt-2">
+              {product.categoryInfo.category_name}
+            </p>
 
-        <p className="font-semibold text-colorBlack text-lg mt-2">
-          {product.product_name}
-        </p>
-        <p className="text-[#888888] font-normal text-sm">
-          {product.product_description}
-        </p>
-        <p className="font-semibold text-colorBlack text-lg mt-2">
-          {product.categoryInfo.category_name}
-        </p>
+            <p className="font-semibold text-colorBlack text-lg mt-2">
+              {product.product_color}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

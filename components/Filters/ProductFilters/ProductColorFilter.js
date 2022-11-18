@@ -1,22 +1,32 @@
-import React from "react";
-import { Autocomplete, Checkbox, TextField } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Autocomplete, capitalize, Checkbox, TextField } from "@mui/material";
 import CardInteractive from "../CardInteractive/CardInteractive";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import { changeAppliedProductsFilters } from "../../../redux/ducks/productsFilters";
+import { useDispatch, useSelector } from "react-redux";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-const ProductColorFilter = () => {
-  const colorsList = [
-    { label: "Red", value: "red" },
-    { label: "Pink", value: "pink" },
-    { label: "Yellow", value: "yellow" },
-    { label: "Wine", value: "wine" },
-    { label: "Purple", value: "purple" },
-    { label: "Blue", value: "blue" },
-    { label: "Orange", value: "orange" },
-  ];
+const colorsList = [
+  "red",
+  "pink",
+  "yellow",
+  "wine",
+  "purple",
+  "blue",
+  "orange",
+  "green",
+  "white",
+];
+
+const ProductColorFilter = ({ setProductPageSkip }) => {
+  const dispatch = useDispatch();
+  const productsFiltersReducer = useSelector(
+    (state) => state.productsFiltersReducer
+  );
+
   return (
     <CardInteractive
       cardTitle="Colors"
@@ -26,7 +36,22 @@ const ProductColorFilter = () => {
             multiple
             options={colorsList}
             disableCloseOnSelect
-            getOptionLabel={(option) => option.label}
+            getOptionLabel={(option) => option}
+            onChange={(event, newValue) => {
+              setProductPageSkip(0);
+              dispatch(
+                changeAppliedProductsFilters({
+                  key: "productColor",
+                  value: {
+                    selectedValue: newValue,
+                  },
+                })
+              );
+            }}
+            value={
+              productsFiltersReducer.appliedProductsFilters.productColor
+                .selectedValue
+            }
             renderOption={(props, option, { selected }) => (
               <li {...props}>
                 <Checkbox
@@ -35,7 +60,7 @@ const ProductColorFilter = () => {
                   style={{ marginRight: 8 }}
                   checked={selected}
                 />
-                {option.label}
+                {capitalize(option)}
               </li>
             )}
             renderInput={(params) => (
