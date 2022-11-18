@@ -11,8 +11,6 @@ import "react-toastify/dist/ReactToastify.css";
 import store from "../redux/store";
 import { Provider } from "react-redux";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { ApolloProvider } from "@apollo/client";
-import client from "../graphql/apollo-client";
 
 const theme = createTheme({
   palette: {
@@ -29,11 +27,9 @@ function MyApp({ Component, pageProps }) {
         <title>Wedding Bell</title>
       </Head>
       <ThemeProvider theme={theme}>
-        <ApolloProvider client={client}>
-          <Provider store={store}>
-            <Component {...pageProps} />
-          </Provider>
-        </ApolloProvider>
+        <Provider store={store}>
+          <Component {...pageProps} />
+        </Provider>
       </ThemeProvider>
     </>
   );

@@ -2,15 +2,29 @@ import React from "react";
 import { Avatar } from "@mui/material";
 import Image from "next/image";
 import Link from "next/link";
-import ProductImage from "../../../assets/product-image.png";
-import heartIcon from "../../../assets/svg/heart.svg";
 import Slider from "react-slick";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { useSelector } from "react-redux";
+
 const ProductCard = ({ product }) => {
-  const items = [0, 1, 2].map((itm) => {
+  const productsFiltersReducer = useSelector(
+    (state) => state.productsFiltersReducer
+  );
+
+  const items = [
+    product.product_image.back,
+    product.product_image.front,
+    product.product_image.side,
+  ].map((itm) => {
     return (
-      <div className="w-[60%] mx-auto" key={itm}>
-        <Image src={ProductImage} alt={product.name} />
-      </div>
+      <Image
+        src={itm}
+        alt={product.name}
+        width={250}
+        height={productsFiltersReducer.productLayout === "list" ? 300 : 400}
+        className="rounded"
+        key={itm}
+      />
     );
   });
   const shopId =product.branchInfo.shop_id 
@@ -21,6 +35,7 @@ const ProductCard = ({ product }) => {
     slidesToShow: 1,
     slidesToScroll: 1,
   };
+
   return (
     <div className="bg-white shadow-[0_0_4px_rgba(0,0,0,0.25)] rounded-lg ">
       <div className="border-b">
@@ -31,9 +46,9 @@ const ProductCard = ({ product }) => {
             </div>
           </div>
           <button
-            className={`w-10 h-10 rounded-full transition-colors duration-300 hover:opacity-80 bg-[#FC4D4D] absolute top-0 right-0`}
+            className={`w-10 h-10 rounded-full transition-colors bg-[#f5f5f5] duration-300 hover:opacity-80  absolute top-0 right-0`}
           >
-            <Image src={heartIcon} alt="heart" width="12" height="12" />
+            <FavoriteBorderIcon fontSize="small" />
           </button>
 
           <div className="product-overlay">
@@ -50,7 +65,7 @@ const ProductCard = ({ product }) => {
           <div className="flex justify-center items-center">
             <Avatar
               alt="Shop Logo"
-              src="/static/images/avatar/1.jpg"
+              src={product.branchInfo.shop_info?.shop_logo}
               layout="fill"
             />
           </div>
@@ -63,13 +78,23 @@ const ProductCard = ({ product }) => {
             <p className="text-[#888888] text-sm font-normal">25 days ago</p>
           </div>
         </div>
+        {productsFiltersReducer.productLayout === "list" && (
+          <div>
+            <p className="font-semibold text-colorBlack text-lg mt-2">
+              {product.product_name}
+            </p>
+            <p className="text-[#888888] font-normal text-sm">
+              {product.product_description}
+            </p>
+            <p className="font-semibold text-colorBlack text-lg mt-2">
+              {product.categoryInfo.category_name}
+            </p>
 
-        <p className="font-semibold text-colorBlack text-lg mt-2">
-          {product.product_name}
-        </p>
-        <p className="text-[#888888] font-normal text-sm">
-          {product.product_description}
-        </p>
+            <p className="font-semibold text-colorBlack text-lg mt-2">
+              {product.product_color}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

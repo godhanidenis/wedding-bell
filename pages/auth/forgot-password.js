@@ -30,27 +30,8 @@ const ForgotPassword = () => {
     getValues,
   } = useForm();
   const onSubmit = async (data) => {
-    console.log("dataaa", data);
-    // setLoading(true);
-    // ResetPassword({
-    //   email: data.email,
-    // }).then(
-    //   (res) => {
-    //     console.log("resss", res);
-    //     setLoading(false);
-    //     setSuccess(true);
-    //     setAlertMsg(res.data.detail);
-    //     localStorage.setItem("email", data.email);
-    //   },
-    //   (error) => {
-    //     console.log("error....", error);
-    //     setLoading(false);
-
-    //     setInvalid(true);
-
-    //     setAlertMsg(error.response.data.detail);
-    //   }
-    // );
+    console.log("data", data);
+    
   };
   const onError = (errors) => console.log("Errors Occurred !! :", errors);
 

@@ -1,8 +1,9 @@
+import React, { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import Image from "next/image";
 import Link from "next/link";
 import Logout from "@mui/icons-material/Logout";
 
-import React, { useEffect, useRef, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -21,6 +22,7 @@ import { AuthTypeModal } from "../core/Enum";
 
 import {
   Avatar,
+  Checkbox,
   ClickAwayListener,
   Divider,
   Grow,
@@ -30,14 +32,18 @@ import {
   Popper,
 } from "@mui/material";
 import SubHeader from "./SubHeader";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 
-const Locations = ["Kamrej", "Adajan", "Mota Varachha", "JakatNaka"];
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const Header = () => {
   const [open, setOpen] = useState(false);
   const [authTypeModal, setauthTypeModal] = useState();
   const [accessToken, setAccessToken] = useState();
 
+  const { areaLists } = useSelector((state) => state.areaLists);
   useEffect(() => {
     const getAccessToken = localStorage.getItem("token");
     setAccessToken(getAccessToken);
@@ -60,18 +66,30 @@ const Header = () => {
             </Link>
             <Autocomplete
               size="small"
-              disablePortal
-              options={Locations}
+              options={areaLists}
+              disableCloseOnSelect
+              getOptionLabel={(option) => option.area}
               sx={{
-                width: 150,
+                width: 175,
                 background: "white",
                 borderRadius: "5px",
               }}
+              renderOption={(props, option, { selected }) => (
+                <li {...props}>
+                  <Checkbox
+                    icon={icon}
+                    checkedIcon={checkedIcon}
+                    style={{ marginRight: 8 }}
+                    checked={selected}
+                  />
+                  {option.area}
+                </li>
+              )}
               renderInput={(params) => (
                 <TextField
-                  placeholder="Locations"
                   {...params}
                   variant="outlined"
+                  placeholder="Location"
                 />
               )}
             />

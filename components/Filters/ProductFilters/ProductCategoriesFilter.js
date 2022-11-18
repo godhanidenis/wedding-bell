@@ -1,30 +1,89 @@
+import React, { useEffect, useState } from "react";
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Autocomplete,
   Checkbox,
-  FormControlLabel,
-  FormGroup,
+  TextField,
   Typography,
 } from "@mui/material";
-import React from "react";
 import CardInteractive from "../CardInteractive/CardInteractive";
 
-const ProductCategoriesFilter = () => {
-  const mensCategories = [
-    { label: "All", value: "All" },
-    { label: "Blazer", value: "Blazer" },
-    { label: "Suit", value: "Suit" },
-    { label: "Sherwani", value: "Sherwani" },
-    { label: "Kurta", value: "Kurta" },
-    { label: "IndoWestern", value: "IndoWestern" },
-  ];
-  const womensCategories = [
-    { label: "All", value: "All" },
-    { label: "Choli", value: "Choli" },
-    { label: "Kurti", value: "Kurti" },
-    { label: "Lehanga", value: "Lehanga" },
-  ];
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import { useDispatch, useSelector } from "react-redux";
+import { changeAppliedProductsFilters } from "../../../redux/ducks/productsFilters";
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
+
+const ProductCategoriesFilter = ({ setProductPageSkip }) => {
+  const { categories } = useSelector((state) => state.categories);
+
+  const [menCategoryLabel, setMenCategoryLabel] = useState([]);
+  const [womenCategoryLabel, setWomenCategoryLabel] = useState([]);
+
+  const [selectedMenCat, setSelectedMenCat] = useState([]);
+  const [selectedWomenCat, setSelectedWomenCat] = useState([]);
+
+  const [menSelectedData, setMenSelectedData] = useState([]);
+  const [womenSelectedData, setWomenSelectedData] = useState([]);
+
+  const [categoryId, setCategoryId] = useState([]);
+
+  const [abc, setAbc] = useState(false);
+
+  const dispatch = useDispatch();
+  const productsFiltersReducer = useSelector(
+    (state) => state.productsFiltersReducer
+  );
+
+  useEffect(() => {
+    setCategoryId([...menSelectedData, ...womenSelectedData]);
+  }, [menSelectedData, setCategoryId, womenSelectedData]);
+
+  useEffect(() => {
+    abc &&
+      dispatch(
+        changeAppliedProductsFilters({
+          key: "categoryId",
+          value: {
+            selectedValue: categoryId,
+          },
+        })
+      );
+  }, [abc, categoryId, dispatch]);
+
+  useEffect(() => {
+    productsFiltersReducer.appliedProductsFilters &&
+      setSelectedMenCat(
+        productsFiltersReducer.appliedProductsFilters.categoryId.selectedValue
+          .map((itm) => categories.find((i) => i.id === itm))
+          .filter((ele) => ele.category_type === "Men")
+          .map((i) => i.category_name)
+      );
+
+    setSelectedWomenCat(
+      productsFiltersReducer.appliedProductsFilters.categoryId.selectedValue
+        .map((itm) => categories.find((i) => i.id === itm))
+        .filter((ele) => ele.category_type === "Women")
+        .map((i) => i.category_name)
+    );
+  }, [categories, productsFiltersReducer.appliedProductsFilters]);
+
+  useEffect(() => {
+    setMenCategoryLabel(
+      categories
+        .filter((itm) => itm.category_type === "Men")
+        .map((i) => i.category_name)
+    );
+    setWomenCategoryLabel(
+      categories
+        .filter((itm) => itm.category_type === "Women")
+        .map((i) => i.category_name)
+    );
+  }, [categories]);
 
   return (
     <CardInteractive
@@ -36,16 +95,44 @@ const ProductCategoriesFilter = () => {
               <Typography>MEN</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <FormGroup onChange={(e) => console.log(e.target.value)}>
-                {mensCategories.map((itm) => (
-                  <FormControlLabel
-                    key={itm.value}
-                    control={<Checkbox />}
-                    label={itm.label}
-                    value={itm.value}
+              <Autocomplete
+                multiple
+                options={menCategoryLabel}
+                disableCloseOnSelect
+                getOptionLabel={(option) => option}
+                onChange={(event, newValue) => {
+                  setSelectedMenCat(newValue);
+                  setProductPageSkip(0);
+                  setAbc(true);
+                  setMenSelectedData(
+                    newValue.map(
+                      (itm) =>
+                        categories.find((ele) => ele.category_name === itm)?.id
+                    )
+                  );
+                }}
+                value={selectedMenCat}
+                renderOption={(props, option, { selected }) =>
+                  option && (
+                    <li {...props}>
+                      <Checkbox
+                        icon={icon}
+                        checkedIcon={checkedIcon}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                      />
+                      {option}
+                    </li>
+                  )
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Men's Categories"
+                    placeholder="Men's Categories"
                   />
-                ))}
-              </FormGroup>
+                )}
+              />
             </AccordionDetails>
           </Accordion>
 
@@ -54,16 +141,44 @@ const ProductCategoriesFilter = () => {
               <Typography>WOMEN</Typography>
             </AccordionSummary>
             <AccordionDetails>
-              <FormGroup onChange={(e) => console.log(e.target.value)}>
-                {womensCategories.map((itm) => (
-                  <FormControlLabel
-                    key={itm.value}
-                    control={<Checkbox />}
-                    label={itm.label}
-                    value={itm.value}
+              <Autocomplete
+                multiple
+                options={womenCategoryLabel}
+                disableCloseOnSelect
+                getOptionLabel={(option) => option}
+                onChange={(event, newValue) => {
+                  setSelectedWomenCat(newValue);
+                  setProductPageSkip(0);
+                  setAbc(true);
+                  setWomenSelectedData(
+                    newValue.map(
+                      (itm) =>
+                        categories.find((ele) => ele.category_name === itm)?.id
+                    )
+                  );
+                }}
+                value={selectedWomenCat}
+                renderOption={(props, option, { selected }) =>
+                  option && (
+                    <li {...props}>
+                      <Checkbox
+                        icon={icon}
+                        checkedIcon={checkedIcon}
+                        style={{ marginRight: 8 }}
+                        checked={selected}
+                      />
+                      {option}
+                    </li>
+                  )
+                }
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Women's Categories"
+                    placeholder="Women's Categories"
                   />
-                ))}
-              </FormGroup>
+                )}
+              />
             </AccordionDetails>
           </Accordion>
         </>

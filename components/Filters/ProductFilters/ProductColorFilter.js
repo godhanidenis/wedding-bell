@@ -1,55 +1,72 @@
-import React from "react";
-import {
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  IconButton,
-  InputAdornment,
-  OutlinedInput,
-} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Autocomplete, capitalize, Checkbox, TextField } from "@mui/material";
 import CardInteractive from "../CardInteractive/CardInteractive";
-import SearchIcon from "@mui/icons-material/Search";
+import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import CheckBoxIcon from "@mui/icons-material/CheckBox";
+import { changeAppliedProductsFilters } from "../../../redux/ducks/productsFilters";
+import { useDispatch, useSelector } from "react-redux";
 
-const ProductColorFilter = () => {
-  const colorsList = [
-    { label: "All", value: "All" },
-    { label: "Red", value: "Red" },
-    { label: "Pink", value: "Pink" },
-    { label: "Yellow", value: "Yellow" },
-    { label: "Wine", value: "Wine" },
-    { label: "Purple", value: "Purple" },
-    { label: "Blue", value: "Blue" },
-    { label: "Orange", value: "Orange" },
-  ];
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
+
+const colorsList = [
+  "red",
+  "pink",
+  "yellow",
+  "wine",
+  "purple",
+  "blue",
+  "orange",
+  "green",
+  "white",
+];
+
+const ProductColorFilter = ({ setProductPageSkip }) => {
+  const dispatch = useDispatch();
+  const productsFiltersReducer = useSelector(
+    (state) => state.productsFiltersReducer
+  );
+
   return (
     <CardInteractive
       cardTitle="Colors"
       bottomComponent={
         <>
-          <OutlinedInput
-            className="w-full"
-            onKeyPress={(ev) => {
-              if (ev.key === "Enter") {
-              }
+          <Autocomplete
+            multiple
+            options={colorsList}
+            disableCloseOnSelect
+            getOptionLabel={(option) => option}
+            onChange={(event, newValue) => {
+              setProductPageSkip(0);
+              dispatch(
+                changeAppliedProductsFilters({
+                  key: "productColor",
+                  value: {
+                    selectedValue: newValue,
+                  },
+                })
+              );
             }}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton>
-                  <SearchIcon className="hover:text-[#95539B]" />
-                </IconButton>
-              </InputAdornment>
+            value={
+              productsFiltersReducer.appliedProductsFilters.productColor
+                .selectedValue
             }
+            renderOption={(props, option, { selected }) => (
+              <li {...props}>
+                <Checkbox
+                  icon={icon}
+                  checkedIcon={checkedIcon}
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                {capitalize(option)}
+              </li>
+            )}
+            renderInput={(params) => (
+              <TextField {...params} label="Colors" placeholder="color" />
+            )}
           />
-          <FormGroup className="mt-4">
-            {colorsList.map((itm) => (
-              <FormControlLabel
-                key={itm.value}
-                control={<Checkbox />}
-                label={itm.label}
-                value={itm.value}
-              />
-            ))}
-          </FormGroup>
         </>
       }
     />

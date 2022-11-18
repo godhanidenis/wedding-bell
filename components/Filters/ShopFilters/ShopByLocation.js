@@ -1,34 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { Autocomplete, Checkbox, TextField } from "@mui/material";
 import CardInteractive from "../CardInteractive/CardInteractive";
-
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import { useDispatch, useSelector } from "react-redux";
-import { changeAppliedProductsFilters } from "../../../redux/ducks/productsFilters";
+import { changeAppliedShopsFilters } from "../../../redux/ducks/shopsFilters";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-const ProductByShopFilter = ({ setProductPageSkip }) => {
-  const { shopsLimit, shopsCount, numOfPages, shopsData, loading, error } =
-    useSelector((state) => state.shops);
+const ShopByLocation = ({ setShopPageSkip }) => {
+  const { areaLists } = useSelector((state) => state.areaLists);
 
-  const [selectShopName, setSelectedShopName] = useState([]);
-  const [allShopLabel, setAllShopLabel] = useState([]);
+  const [selectedAreaLocation, setSelectedAreaLocation] = useState([]);
+  const [allAreaLocationLabel, setAllAreaLocationLabel] = useState([]);
   const [selectedData, setSelectedData] = useState([]);
 
   const [abc, setAbc] = useState(false);
+
   const dispatch = useDispatch();
-  const productsFiltersReducer = useSelector(
-    (state) => state.productsFiltersReducer
-  );
+  const shopsFiltersReducer = useSelector((state) => state.shopsFiltersReducer);
 
   useEffect(() => {
     abc &&
       dispatch(
-        changeAppliedProductsFilters({
-          key: "shopId",
+        changeAppliedShopsFilters({
+          key: "locations",
           value: {
             selectedValue: selectedData,
           },
@@ -37,39 +34,39 @@ const ProductByShopFilter = ({ setProductPageSkip }) => {
   }, [abc, dispatch, selectedData]);
 
   useEffect(() => {
-    productsFiltersReducer.appliedProductsFilters &&
-      setSelectedShopName(
-        productsFiltersReducer.appliedProductsFilters.shopId.selectedValue.map(
-          (itm) => shopsData.find((i) => i.id === itm).shop_name
+    shopsFiltersReducer.appliedShopsFilters &&
+      setSelectedAreaLocation(
+        shopsFiltersReducer.appliedShopsFilters.locations.selectedValue.map(
+          (itm) => areaLists.find((i) => i.pin === itm).area
         )
       );
-  }, [productsFiltersReducer.appliedProductsFilters, shopsData]);
+  }, [shopsFiltersReducer.appliedShopsFilters, areaLists]);
 
   useEffect(() => {
-    setAllShopLabel(shopsData?.map((itm) => itm.shop_name));
-  }, [shopsData]);
+    setAllAreaLocationLabel(areaLists.map((itm) => itm.area));
+  }, [areaLists]);
 
   return (
     <CardInteractive
-      cardTitle="Shops"
+      cardTitle="Locations"
       bottomComponent={
         <>
           <Autocomplete
             multiple
-            options={allShopLabel}
+            options={allAreaLocationLabel}
             disableCloseOnSelect
             getOptionLabel={(option) => option}
             onChange={(event, newValue) => {
-              setSelectedShopName(newValue);
-              setProductPageSkip(0);
+              setSelectedAreaLocation(newValue);
+              setShopPageSkip(0);
               setAbc(true);
               setSelectedData(
                 newValue.map(
-                  (itm) => shopsData.find((ele) => ele.shop_name === itm)?.id
+                  (itm) => areaLists.find((ele) => ele.area === itm)?.pin
                 )
               );
             }}
-            value={selectShopName}
+            value={selectedAreaLocation}
             renderOption={(props, option, { selected }) => (
               <li {...props}>
                 <Checkbox
@@ -82,7 +79,11 @@ const ProductByShopFilter = ({ setProductPageSkip }) => {
               </li>
             )}
             renderInput={(params) => (
-              <TextField {...params} label="Shops" placeholder="Shop Name" />
+              <TextField
+                {...params}
+                label="Area Location"
+                placeholder="Location"
+              />
             )}
           />
         </>
@@ -91,4 +92,4 @@ const ProductByShopFilter = ({ setProductPageSkip }) => {
   );
 };
 
-export default ProductByShopFilter;
+export default ShopByLocation;
