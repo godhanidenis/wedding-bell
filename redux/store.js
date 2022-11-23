@@ -8,9 +8,11 @@ import productsReducer from "./ducks/product";
 import productsFiltersReducer from "./ducks/productsFilters";
 import shopsReducer from "./ducks/shop";
 import shopsFiltersReducer from "./ducks/shopsFilters";
+import userProfileReducer from "./ducks/userProfile";
 import watcherSaga from "./sagas/rootSaga";
 
 const reducer = combineReducers({
+  userProfile: userProfileReducer,
   products: productsReducer,
   shops: shopsReducer,
   categories: categoriesReducer,

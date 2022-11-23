@@ -1,19 +1,45 @@
-import React from "react";
-import { Avatar } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Slider from "react-slick";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { productLikeToggle } from "../../../redux/ducks/userProfile";
+import { productLike } from "../../../graphql/mutations/products";
+import AuthModal from "../../core/AuthModal";
+import { AuthTypeModal } from "../../core/Enum";
+import { toast } from "react-toastify";
 
 const ProductCard = ({ product }) => {
+  const [productLikeByUser, setProductLikeByUser] = useState(false);
+
+  const [open, setOpen] = useState(false);
+  const [authTypeModal, setAuthTypeModal] = useState();
+
+  const dispatch = useDispatch();
   const productsFiltersReducer = useSelector(
     (state) => state.productsFiltersReducer
   );
+  const { userProfile, isAuthenticate } = useSelector(
+    (state) => state.userProfile
+  );
+  useEffect(() => {
+    if (!isAuthenticate) {
+      setProductLikeByUser(false);
+    }
+
+    const likedProductByUser = userProfile?.product_like_list?.find(
+      (itm) => itm.id === product.id
+    );
+
+    likedProductByUser
+      ? setProductLikeByUser(true)
+      : setProductLikeByUser(false);
+  }, [isAuthenticate, product.id, userProfile]);
 
   const items = [
-    product.product_image.back,
     product.product_image.front,
+    product.product_image.back,
     product.product_image.side,
   ].map((itm) => {
     return (
@@ -27,8 +53,8 @@ const ProductCard = ({ product }) => {
       />
     );
   });
-  const shopId =product.branchInfo.shop_id 
-  console.log("LLLLLLLLLLL",product.branchInfo.shop_id )
+  const shopId = product.branchInfo?.shop_id;
+
   const settings = {
     infinite: true,
     speed: 500,
@@ -47,8 +73,48 @@ const ProductCard = ({ product }) => {
           </div>
           <button
             className={`w-10 h-10 rounded-full transition-colors bg-[#f5f5f5] duration-300 hover:opacity-80  absolute top-0 right-0`}
+            onClick={() => {
+              if (isAuthenticate) {
+                productLike({
+                  productInfo: {
+                    product_id: product.id,
+                    user_id: userProfile.id,
+                  },
+                }).then(
+                  (res) => {
+                    dispatch(
+                      !productLikeByUser
+                        ? productLikeToggle({
+                            productInfo: {
+                              key: "like",
+                              value: res.data.productLike.data,
+                            },
+                          })
+                        : productLikeToggle({
+                            productInfo: {
+                              key: "disLike",
+                              value: product.id,
+                            },
+                          })
+                    );
+                    toast.success(res.data.productLike.message, {
+                      theme: "colored",
+                    });
+                  },
+                  (error) => {
+                    toast.error(error.message, { theme: "colored" });
+                  }
+                );
+              } else {
+                setOpen(true), setAuthTypeModal(AuthTypeModal.Signin);
+              }
+            }}
           >
-            <FavoriteBorderIcon fontSize="small" />
+            {!productLikeByUser ? (
+              <FavoriteBorderIcon fontSize="small" />
+            ) : (
+              "❤️"
+            )}
           </button>
 
           <div className="product-overlay">
@@ -63,17 +129,19 @@ const ProductCard = ({ product }) => {
       <div className="px-5 py-3">
         <div className="flex gap-2 justify-start">
           <div className="flex justify-center items-center">
-            <Avatar
+            <Image
               alt="Shop Logo"
-              src={product.branchInfo.shop_info?.shop_logo}
-              layout="fill"
+              src={product.branchInfo?.shop_info?.shop_logo}
+              width={80}
+              height={50}
+              className="rounded-[50%]"
             />
           </div>
           <div className="flex flex-col justify-center">
-          <Link href={`/shpodetails/${shopId}`}>
-            <p className="text-[#000000] text-base font-semibold cursor-pointer hover:text-colorPrimary">
-                {product.branchInfo.branch_name || "ShopeName"} 
-            </p>
+            <Link href={`/shop/${shopId}`}>
+              <p className="text-[#000000] text-base font-semibold cursor-pointer hover:text-colorPrimary">
+                {product.branchInfo?.shop_info?.shop_name}
+              </p>
             </Link>
             <p className="text-[#888888] text-sm font-normal">25 days ago</p>
           </div>
@@ -87,7 +155,7 @@ const ProductCard = ({ product }) => {
               {product.product_description}
             </p>
             <p className="font-semibold text-colorBlack text-lg mt-2">
-              {product.categoryInfo.category_name}
+              {product.categoryInfo?.category_name}
             </p>
 
             <p className="font-semibold text-colorBlack text-lg mt-2">
@@ -96,6 +164,14 @@ const ProductCard = ({ product }) => {
           </div>
         )}
       </div>
+      <AuthModal
+        open={open}
+        handleClose={() => {
+          setOpen(false);
+        }}
+        authTypeModal={authTypeModal}
+        setAuthTypeModal={setAuthTypeModal}
+      />
     </div>
   );
 };

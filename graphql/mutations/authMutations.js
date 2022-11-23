@@ -24,6 +24,7 @@ export const signUp = async (payload) => {
         ) {
           token
           message
+          user
         }
       }
     `,
@@ -48,6 +49,7 @@ export const signIn = async (payload) => {
         ) {
           token
           message
+          user
         }
       }
     `,

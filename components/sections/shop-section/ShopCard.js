@@ -49,7 +49,13 @@ const ShopCard = ({ shop }) => {
       <div className="px-5 py-3 border-b">
         <div className="flex gap-2 justify-start">
           <div className="flex justify-center items-center">
-            <Avatar alt="Shop Logo" src={shop.shop_logo} layout="fill" />
+            <Image
+              alt="Shop Logo"
+              src={shop.shop_logo}
+              width={80}
+              height={50}
+              className="rounded-[50%]"
+            />
           </div>
           <div className="flex flex-col justify-center">
             <p className="text-[#000000] text-base font-semibold cursor-pointer hover:text-colorPrimary">

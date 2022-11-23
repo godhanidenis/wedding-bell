@@ -1,5 +1,5 @@
 import ShopByLocation from "./ShopFilters/ShopByLocation";
-import FilterActions from "./ProductFilters/FilterActions";
+import FilterActions from "./FilterActions/FilterActions";
 import ProductByShopFilter from "./ProductFilters/ProductByShopFilter";
 import ProductCategoriesFilter from "./ProductFilters/ProductCategoriesFilter";
 import ProductColorFilter from "./ProductFilters/ProductColorFilter";

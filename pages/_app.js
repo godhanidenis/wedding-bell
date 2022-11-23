@@ -11,6 +11,9 @@ import "react-toastify/dist/ReactToastify.css";
 import store from "../redux/store";
 import { Provider } from "react-redux";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import Header from "../components/Layout/Header";
+import Footer from "../components/Layout/Footer";
+import { ToastContainer } from "react-toastify";
 
 const theme = createTheme({
   palette: {
@@ -27,8 +30,11 @@ function MyApp({ Component, pageProps }) {
         <title>Wedding Bell</title>
       </Head>
       <ThemeProvider theme={theme}>
+        <ToastContainer />
         <Provider store={store}>
+          <Header />
           <Component {...pageProps} />
+          <Footer />
         </Provider>
       </ThemeProvider>
     </>

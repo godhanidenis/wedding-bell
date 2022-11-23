@@ -19,6 +19,12 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
 import { signIn } from "../../../graphql/mutations/authMutations";
+import {
+  loadUserProfileStart,
+  loginUserId,
+} from "../../../redux/ducks/userProfile";
+import { useDispatch } from "react-redux";
+import store from "../../../redux/store";
 
 export default function SignIn({ changeAuthModalType, handleClose }) {
   const [asVendor, setAsVendor] = useState(false);
@@ -33,7 +39,7 @@ export default function SignIn({ changeAuthModalType, handleClose }) {
     watch,
     getValues,
   } = useForm();
-
+  const dispatch = useDispatch();
   const onSubmit = (data) => {
     setLoading(true);
     signIn({
@@ -42,8 +48,10 @@ export default function SignIn({ changeAuthModalType, handleClose }) {
       type: asVendor ? "vendor" : "customer",
     }).then(
       (res) => {
-        toast.success(res.data.signIn.message, { theme: "colored" });
+        dispatch(loginUserId(res.data.signIn.user));
         localStorage.setItem("token", res.data.signIn.token);
+        localStorage.setItem("userId", res.data.signIn.user);
+        toast.success(res.data.signIn.message, { theme: "colored" });
         handleClose();
       },
       (error) => {

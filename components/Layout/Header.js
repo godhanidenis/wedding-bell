@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Image from "next/image";
 import Link from "next/link";
 import Logout from "@mui/icons-material/Logout";
@@ -31,22 +31,39 @@ import {
   Paper,
   Popper,
 } from "@mui/material";
-import SubHeader from "./SubHeader";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
+import {
+  loadUserProfileStart,
+  userLogout,
+} from "../../redux/ducks/userProfile";
+import { changeProductsSearchBarData } from "../../redux/ducks/productsFilters";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 const Header = () => {
   const [open, setOpen] = useState(false);
-  const [authTypeModal, setauthTypeModal] = useState();
+  const [authTypeModal, setAuthTypeModal] = useState();
   const [accessToken, setAccessToken] = useState();
+  const [searchBarValue, setSearchBarValue] = useState("");
 
+  const dispatch = useDispatch();
   const { areaLists } = useSelector((state) => state.areaLists);
+  const { userProfile } = useSelector((state) => state.userProfile);
+  const productsFiltersReducer = useSelector(
+    (state) => state.productsFiltersReducer
+  );
+  useEffect(() => {
+    setSearchBarValue(productsFiltersReducer.searchBarData);
+  }, [productsFiltersReducer.searchBarData]);
+
   useEffect(() => {
     const getAccessToken = localStorage.getItem("token");
     setAccessToken(getAccessToken);
+
+    localStorage.getItem("userId") &&
+      dispatch(loadUserProfileStart({ id: localStorage.getItem("userId") }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typeof window !== "undefined" && localStorage.getItem("token")]);
 
@@ -109,9 +126,33 @@ const Header = () => {
                 >
                   <OutlinedInput
                     placeholder="Search...."
+                    value={searchBarValue}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        dispatch(
+                          changeProductsSearchBarData({
+                            key: "searchBarData",
+                            value: searchBarValue,
+                          })
+                        );
+                      }
+                    }}
+                    onChange={(e) => {
+                      setSearchBarValue(e.currentTarget.value);
+                    }}
                     endAdornment={
                       <InputAdornment position="end">
-                        <IconButton edge="end">
+                        <IconButton
+                          edge="end"
+                          onClick={() =>
+                            dispatch(
+                              changeProductsSearchBarData({
+                                key: "searchBarData",
+                                value: searchBarValue,
+                              })
+                            )
+                          }
+                        >
                           <SearchIcon />
                         </IconButton>
                       </InputAdornment>
@@ -123,24 +164,26 @@ const Header = () => {
 
             <ul className="flex items-center gap-3">
               <li>
-                <IconButton
-                  aria-label="show 17 new notifications"
-                  color="inherit"
-                >
-                  <Badge badgeContent={17} color="error">
-                    <FavoriteBorderOutlinedIcon
-                      sx={{ color: "white" }}
-                      fontSize="large"
-                    />
-                  </Badge>
-                </IconButton>
+                <Link href={`/productLike`} passHref>
+                  <IconButton color="inherit">
+                    <Badge
+                      badgeContent={userProfile?.product_like_list?.length}
+                      color="error"
+                    >
+                      <FavoriteBorderOutlinedIcon
+                        sx={{ color: "white" }}
+                        fontSize="large"
+                      />
+                    </Badge>
+                  </IconButton>
+                </Link>
               </li>
               <li>
                 {!accessToken && (
                   <div
                     className="flex text-colorWhite cursor-pointer"
                     onClick={() => {
-                      setOpen(true), setauthTypeModal(AuthTypeModal.Signin);
+                      setOpen(true), setAuthTypeModal(AuthTypeModal.Signin);
                     }}
                   >
                     <p className="underline hover:scale-105">SingIn / SignUp</p>
@@ -159,12 +202,11 @@ const Header = () => {
                 setOpen(false);
               }}
               authTypeModal={authTypeModal}
-              setauthTypeModal={setauthTypeModal}
+              setAuthTypeModal={setAuthTypeModal}
             />
           </div>
         </div>
       </header>
-      <SubHeader />
     </>
   );
 };
@@ -174,6 +216,11 @@ export default Header;
 const UserProfile = ({ setAccessToken }) => {
   const [anchorElUser, setAnchorElUser] = useState(false);
   const anchorRef = useRef(null);
+  const dispatch = useDispatch();
+  const { userProfile } = useSelector((state) => state.userProfile);
+
+  console.log("userProfile1 ", userProfile);
+
   const handleProfileToggle = () => {
     setAnchorElUser((prevOpen) => !prevOpen);
   };
@@ -193,7 +240,7 @@ const UserProfile = ({ setAccessToken }) => {
           <Image src={ProfileIcon} alt="ProfileIcon" layout="fill" />
         </Avatar>
         <span className="font-semibold hidden sm:flex text-colorWhite">
-          Denis Godhani
+          {userProfile?.first_name + " " + userProfile?.last_name}
         </span>
 
         <KeyboardArrowDownIcon className="hidden sm:flex text-colorWhite" />
@@ -241,9 +288,11 @@ const UserProfile = ({ setAccessToken }) => {
                     <Avatar className="mb-2 !w-14 !h-14">
                       <Image src={ProfileIcon} alt="ProfileIcon" />
                     </Avatar>
-                    <b>Denis Godhani</b>
+                    <b>
+                      {userProfile?.first_name + " " + userProfile?.last_name}
+                    </b>
                     <span className="font-medium text-base">
-                      godhanidenis@gmail.com
+                      {userProfile?.user_email}
                     </span>
                   </div>
 
@@ -252,6 +301,7 @@ const UserProfile = ({ setAccessToken }) => {
                   <MenuItem
                     onClick={() => {
                       localStorage.clear();
+                      dispatch(userLogout());
                       setAccessToken("");
                       handleProfileClose();
                     }}

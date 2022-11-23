@@ -84,7 +84,6 @@ export const getProducts = async (payload) => {
             }
             flag
             productLikes
-            productViews
             product_color
           }
           count
@@ -99,8 +98,158 @@ export const getProducts = async (payload) => {
       filter: payload.filter,
       shopId: payload.shopId,
       sort: payload.sort,
+      search: payload.search,
     },
   });
 
+  return result;
+};
+
+export const getProductDetails = async (payload) => {
+  const result = await client.query({
+    query: gql`
+      query Product($productId: String) {
+        product(id: $productId) {
+          data {
+            id
+            product_name
+            product_description
+            product_image {
+              front
+              back
+              side
+            }
+            product_video
+            product_color
+            categoryInfo {
+              id
+              category_name
+              category_type
+              flag
+            }
+            branchInfo {
+              id
+              shop_id
+              shop_info {
+                id
+                user_id
+                shop_name
+                shop_logo
+                shop_cover_image
+                shop_images {
+                  links
+                }
+                shop_video
+                shop_type
+                is_live
+                flag
+                form_steps
+                shop_social_link {
+                  facebook
+                  instagram
+                  website
+                }
+                shopFollowerCount
+                shopReviewCount
+                shop_review {
+                  id
+                  shop_id
+                  user_id
+                  stars
+                  message
+                  flag
+                }
+                shop_rating
+              }
+              branch_address
+              branch_pinCode
+              manager_name
+              manager_contact
+              branch_time {
+                week
+                open_time
+                close_time
+                is_close
+              }
+              branch_type
+              flag
+            }
+            flag
+            productLikes
+          }
+          related {
+            id
+            product_name
+            product_description
+            product_image {
+              front
+              back
+              side
+            }
+            product_video
+            product_color
+            categoryInfo {
+              id
+              category_name
+              category_type
+              flag
+            }
+            branchInfo {
+              id
+              shop_id
+              shop_info {
+                id
+                user_id
+                shop_name
+                shop_logo
+                shop_cover_image
+                shop_images {
+                  links
+                }
+                shop_video
+                shop_type
+                is_live
+                flag
+                form_steps
+                shop_social_link {
+                  facebook
+                  instagram
+                  website
+                }
+                shopFollowerCount
+                shopReviewCount
+                shop_review {
+                  id
+                  shop_id
+                  user_id
+                  stars
+                  message
+                  flag
+                }
+                shop_rating
+              }
+              branch_address
+              branch_pinCode
+              manager_name
+              manager_contact
+              branch_time {
+                week
+                open_time
+                close_time
+                is_close
+              }
+              branch_type
+              flag
+            }
+            flag
+            productLikes
+          }
+        }
+      }
+    `,
+    variables: {
+      productId: payload.id,
+    },
+  });
   return result;
 };

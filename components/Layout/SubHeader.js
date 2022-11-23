@@ -1,17 +1,41 @@
-import { Paper, Popper, Tab } from "@mui/material";
-import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import { Divider, Paper, Popper, Tab } from "@mui/material";
+import Image from "next/image";
+import { useDispatch, useSelector } from "react-redux";
 import HamburgerIcon from "../../assets/hamburger-icon.svg";
 import { CustomTab, TabPanel } from "../core/CustomMUIComponents";
+import { changeAppliedProductsFilters } from "../../redux/ducks/productsFilters";
 
 const SubHeader = () => {
   const [value, setValue] = useState(0);
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
 
+  const [menCategory, setMenCategory] = useState([]);
+  const [womenCategory, setWomenCategory] = useState([]);
+
+  const [categoryClassName, setCategoryClassName] = useState("");
+
+  const { categories } = useSelector((state) => state.categories);
+  const dispatch = useDispatch();
+  const productsFiltersReducer = useSelector(
+    (state) => state.productsFiltersReducer
+  );
+  useEffect(() => {
+    setMenCategory(categories.filter((itm) => itm.category_type === "Men"));
+    setWomenCategory(categories.filter((itm) => itm.category_type === "Women"));
+  }, [categories]);
+
+  const setActiveLink = (id) => {
+    return productsFiltersReducer.appliedProductsFilters.categoryId.selectedValue.map(
+      (itm) => (itm === id ? "font-semibold" : "")
+    );
+  };
+
+  console.log("categoryClassName", categoryClassName);
+
   const handleMenuOpen = (index, event) => {
     const { currentTarget } = event;
-
     setOpen(true);
     setAnchorEl(currentTarget);
     setValue(index);
@@ -21,7 +45,6 @@ const SubHeader = () => {
     setOpen(false);
     setAnchorEl(null);
   };
-
   return (
     <div className="w-full left-0 top-[83px] sticky bg-colorWhite z-10 shadow-md">
       <div className="container flex gap-48 items-center">
@@ -48,30 +71,71 @@ const SubHeader = () => {
                 <div className="flex justify-between gap-5">
                   <div>
                     <p className="font-semibold text-colorPrimary mb-4">
-                      By Type
+                      By Categories
                     </p>
-                    {["Men 1", "Men 2", "Men 3"].map((itm) => (
-                      <p
-                        key={itm}
-                        className="text-colorBlack font-normal hover:font-semibold"
-                      >
-                        {itm}
-                      </p>
-                    ))}
-                  </div>
-
-                  <div>
-                    <p className="font-semibold text-colorPrimary mb-4">
-                      By Locality
-                    </p>
-                    {["Kamrej", "Adajan", "JakatNaka"].map((itm) => (
-                      <p
-                        key={itm}
-                        className="text-colorBlack font-normal hover:font-semibold"
-                      >
-                        {itm}
-                      </p>
-                    ))}
+                    <div className="grid grid-cols-9 gap-10">
+                      <div className="col-span-4 p-1">
+                        {menCategory.map((itm, index) => {
+                          if (index <= menCategory.length / 2 - (0.5 || 1)) {
+                            return (
+                              <p
+                                key={itm.id}
+                                className={`text-colorBlack p-1 font-normal hover:font-semibold  ${setActiveLink(
+                                  itm.id
+                                )}`}
+                                onClick={() => {
+                                  dispatch(
+                                    changeAppliedProductsFilters({
+                                      key: "categoryId",
+                                      value: {
+                                        selectedValue: [itm.id],
+                                      },
+                                    })
+                                  );
+                                  handleMenuClose();
+                                }}
+                              >
+                                {itm.category_name}
+                              </p>
+                            );
+                          }
+                          return "";
+                        })}
+                      </div>
+                      <Divider
+                        orientation="vertical"
+                        variant="middle"
+                        flexItem
+                      />
+                      <div className="col-span-4 p-1">
+                        {menCategory.map((itm, index) => {
+                          if (index > menCategory.length / 2 - (0.5 || 1)) {
+                            return (
+                              <p
+                                key={itm.id}
+                                className={`text-colorBlack p-1 font-normal hover:font-semibold  ${setActiveLink(
+                                  itm.id
+                                )}`}
+                                onClick={() => {
+                                  dispatch(
+                                    changeAppliedProductsFilters({
+                                      key: "categoryId",
+                                      value: {
+                                        selectedValue: [itm.id],
+                                      },
+                                    })
+                                  );
+                                  handleMenuClose();
+                                }}
+                              >
+                                {itm.category_name}
+                              </p>
+                            );
+                          }
+                          return "";
+                        })}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </TabPanel>
@@ -80,30 +144,71 @@ const SubHeader = () => {
                 <div className="flex justify-between gap-5">
                   <div>
                     <p className="font-semibold text-colorPrimary mb-4">
-                      By Type
+                      By Categories
                     </p>
-                    {["Women 1", "Women 2", "Women 3"].map((itm) => (
-                      <p
-                        key={itm}
-                        className="text-colorBlack font-normal hover:font-semibold"
-                      >
-                        {itm}
-                      </p>
-                    ))}
-                  </div>
-
-                  <div>
-                    <p className="font-semibold text-colorPrimary mb-4">
-                      By Locality
-                    </p>
-                    {["Kamrej", "Adajan", "JakatNaka"].map((itm) => (
-                      <p
-                        key={itm}
-                        className="text-colorBlack font-normal hover:font-semibold"
-                      >
-                        {itm}
-                      </p>
-                    ))}
+                    <div className="grid grid-cols-9 gap-10">
+                      <div className="col-span-4 p-1">
+                        {womenCategory.map((itm, index) => {
+                          if (index <= womenCategory.length / 2 - (0.5 || 1)) {
+                            return (
+                              <p
+                                key={itm.id}
+                                className={`text-colorBlack p-1 font-normal hover:font-semibold  ${setActiveLink(
+                                  itm.id
+                                )}`}
+                                onClick={() => {
+                                  dispatch(
+                                    changeAppliedProductsFilters({
+                                      key: "categoryId",
+                                      value: {
+                                        selectedValue: [itm.id],
+                                      },
+                                    })
+                                  );
+                                  handleMenuClose();
+                                }}
+                              >
+                                {itm.category_name}
+                              </p>
+                            );
+                          }
+                          return "";
+                        })}
+                      </div>
+                      <Divider
+                        orientation="vertical"
+                        variant="middle"
+                        flexItem
+                      />
+                      <div className="col-span-4 p-1">
+                        {womenCategory.map((itm, index) => {
+                          if (index > womenCategory.length / 2 - (0.5 || 1)) {
+                            return (
+                              <p
+                                key={itm.id}
+                                className={`text-colorBlack p-1 font-normal hover:font-semibold  ${setActiveLink(
+                                  itm.id
+                                )}`}
+                                onClick={() => {
+                                  dispatch(
+                                    changeAppliedProductsFilters({
+                                      key: "categoryId",
+                                      value: {
+                                        selectedValue: [itm.id],
+                                      },
+                                    })
+                                  );
+                                  handleMenuClose();
+                                }}
+                              >
+                                {itm.category_name}
+                              </p>
+                            );
+                          }
+                          return "";
+                        })}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </TabPanel>

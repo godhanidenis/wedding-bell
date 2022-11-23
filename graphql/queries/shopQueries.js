@@ -8,8 +8,9 @@ export const getShops = async (payload) => {
         $area: [String]
         $sort: String
         $pageData: paginationInput
+        $stars: String
       ) {
-        shopList(area: $area, sort: $sort, pageData: $pageData) {
+        shopList(area: $area, sort: $sort, pageData: $pageData, stars: $stars) {
           count
           limit
           noOfPages
@@ -70,6 +71,7 @@ export const getShops = async (payload) => {
       area: payload.area,
       sort: payload.sort,
       pageData: payload.pageData,
+      stars: payload.stars,
     },
   });
 

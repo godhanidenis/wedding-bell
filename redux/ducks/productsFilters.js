@@ -5,6 +5,8 @@ export const CHANGE_SORT_PRODUCTS_FILTERS = "CHANGE_SORT_PRODUCTS_FILTERS";
 
 export const CHANGE_PRODUCTS_LAYOUT = "CHANGE_PRODUCTS_LAYOUT";
 
+export const CHANGE_PRODUCTS_SEARCHBAR_DATA = "CHANGE_PRODUCTS_SEARCHBAR_DATA";
+
 export const changeAppliedProductsFilters = (filter) => ({
   type: CHANGE_APPLIED_PRODUCTS_FILTERS,
   payload: filter,
@@ -18,6 +20,11 @@ export const changeSortProductsFilters = (sortFilter) => ({
 export const changeProductsLayout = (layout) => ({
   type: CHANGE_PRODUCTS_LAYOUT,
   payload: layout,
+});
+
+export const changeProductsSearchBarData = (searchData) => ({
+  type: CHANGE_PRODUCTS_SEARCHBAR_DATA,
+  payload: searchData,
 });
 
 const initialState = {
@@ -36,6 +43,7 @@ const initialState = {
     sortType: { selectedValue: "" },
   },
   productLayout: "list",
+  searchBarData: "",
 };
 
 const productsFiltersReducer = (state = initialState, action) => {
@@ -65,6 +73,13 @@ const productsFiltersReducer = (state = initialState, action) => {
         ...state,
         [`${action.payload.key}`]: `${action.payload.value}`,
       };
+
+    case CHANGE_PRODUCTS_SEARCHBAR_DATA:
+      return {
+        ...state,
+        [`${action.payload.key}`]: `${action.payload.value}`,
+      };
+
     default:
       return state;
   }

@@ -60,6 +60,7 @@ export default function SignUp({ changeAuthModalType, handleClose }) {
       (res) => {
         toast.success(res.data.signUp.message, { theme: "colored" });
         localStorage.setItem("token", res.data.signUp.token);
+        localStorage.setItem("userId", res.data.signUp.user);
         handleClose();
       },
       (error) => {

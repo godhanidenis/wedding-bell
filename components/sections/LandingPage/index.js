@@ -7,7 +7,7 @@ import {
   loadMoreProductsStart,
   loadProductsStart,
 } from "../../../redux/ducks/product";
-import UpperFilter from "../../Filters/ProductFilters/UpperFilter";
+import UpperFilter from "../../Filters/UpperFilter/UpperFilter";
 import ProductCard from "../product-section/ProductCard";
 import { loadMoreShopsStart, loadShopsStart } from "../../../redux/ducks/shop";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -51,7 +51,6 @@ const LandingPage = () => {
   const getMoreProductsList = () => {
     dispatch(
       loadMoreProductsStart({
-        search: "",
         pageData: {
           skip: productPageSkip,
           limit: 6,
@@ -67,6 +66,7 @@ const LandingPage = () => {
         shopId:
           productsFiltersReducer.appliedProductsFilters.shopId.selectedValue,
         sort: productsFiltersReducer.sortFilters.sortType.selectedValue,
+        search: productsFiltersReducer.searchBarData,
       })
     );
   };
@@ -74,7 +74,6 @@ const LandingPage = () => {
   const getAllProducts = () => {
     dispatch(
       loadProductsStart({
-        search: "",
         pageData: {
           skip: productPageSkip,
           limit: 6,
@@ -90,6 +89,7 @@ const LandingPage = () => {
         shopId:
           productsFiltersReducer.appliedProductsFilters.shopId.selectedValue,
         sort: productsFiltersReducer.sortFilters.sortType.selectedValue,
+        search: productsFiltersReducer.searchBarData,
       })
     );
   };
@@ -103,6 +103,7 @@ const LandingPage = () => {
         },
         area: shopsFiltersReducer.appliedShopsFilters.locations.selectedValue,
         sort: shopsFiltersReducer.sortFilters.sortType.selectedValue,
+        stars: "",
       })
     );
   };
@@ -116,6 +117,7 @@ const LandingPage = () => {
         },
         area: shopsFiltersReducer.appliedShopsFilters.locations.selectedValue,
         sort: shopsFiltersReducer.sortFilters.sortType.selectedValue,
+        stars: "",
       })
     );
   };
@@ -127,6 +129,7 @@ const LandingPage = () => {
     dispatch,
     productsFiltersReducer.appliedProductsFilters,
     productsFiltersReducer.sortFilters,
+    productsFiltersReducer.searchBarData,
   ]);
 
   useEffect(() => {

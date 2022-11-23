@@ -19,6 +19,7 @@ const colorsList = [
   "orange",
   "green",
   "white",
+  "black",
 ];
 
 const ProductColorFilter = ({ setProductPageSkip }) => {

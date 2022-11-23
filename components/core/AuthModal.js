@@ -20,7 +20,7 @@ const style = {
 };
 
 const AuthModal = (props) => {
-  const { open, handleClose, authTypeModal, setauthTypeModal } = props;
+  const { open, handleClose, authTypeModal, setAuthTypeModal } = props;
 
   return (
     <CustomAuthModal
@@ -33,13 +33,13 @@ const AuthModal = (props) => {
       <Box sx={style}>
         {authTypeModal === AuthTypeModal.Signin && (
           <SignIn
-            changeAuthModalType={setauthTypeModal}
+            changeAuthModalType={setAuthTypeModal}
             handleClose={handleClose}
           />
         )}
         {authTypeModal === AuthTypeModal.Signup && (
           <SignUp
-            changeAuthModalType={setauthTypeModal}
+            changeAuthModalType={setAuthTypeModal}
             handleClose={handleClose}
           />
         )}
