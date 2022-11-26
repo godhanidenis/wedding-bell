@@ -23,6 +23,6 @@ export function* handleGetMoreShops({ payload }) {
 
     yield put(loadMoreShopsSuccess(response.data.shopList));
   } catch (error) {
-    yield put(loadMoreShopsError(error));
+    yield put(loadMoreShopsError(error.message));
   }
 }

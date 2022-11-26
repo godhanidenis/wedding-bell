@@ -32,8 +32,6 @@ const SubHeader = () => {
     );
   };
 
-  console.log("categoryClassName", categoryClassName);
-
   const handleMenuOpen = (index, event) => {
     const { currentTarget } = event;
     setOpen(true);

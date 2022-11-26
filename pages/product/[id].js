@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import Typography from "@mui/material/Typography";
-import facebook from "../../assets/facebook.png";
-import linkedin from "../../assets/linkedin.png";
-import youtube from "../../assets/youtube.png";
-import instagram from "../../assets/instagram.png";
+import facebookIcon from "../../assets/facebook.png";
+import instagramIcon from "../../assets/instagram.png";
+import googleIcon from "../../assets/googleIcon.svg";
 import StarIcon from "@mui/icons-material/Star";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -25,7 +24,7 @@ import ReactImageMagnify from "react-image-magnify";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { getProductDetails } from "../../graphql/queries/productQueries";
-
+import ProfileIcon from "../../assets/profile.png";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import ProductCard from "../../components/sections/product-section/ProductCard";
 import AuthModal from "../../components/core/AuthModal";
@@ -162,7 +161,7 @@ const ProductDetail = ({ productDetails }) => {
                           height: 800,
                         },
                         enlargedImageContainerDimensions: {
-                          width: "150%",
+                          width: "100%",
                           height: "100%",
                         },
                       }}
@@ -349,7 +348,8 @@ const ProductDetail = ({ productDetails }) => {
                 <a
                   href={`https://api.whatsapp.com/send?phone=${productDetails.data.product.data.branchInfo?.manager_contact}`}
                   target="_blank"
-                  className="w-full" rel="noreferrer"
+                  className="w-full"
+                  rel="noreferrer"
                 >
                   <button
                     className="bg-colorWhite hover:bg-colorWhite text-colorBlack p-5 w-full rounded-xl tracking-wide
@@ -420,7 +420,9 @@ const ProductDetail = ({ productDetails }) => {
                     <Divider orientation="vertical" flexItem />
                     <div className="p-5 flex gap-4 justify-start">
                       <div className="flex justify-center items-center">
-                        <Avatar sx={{ height: "50px", width: "50px" }}></Avatar>
+                        <Avatar className=" !w-14 !h-14">
+                          <Image src={ProfileIcon} alt="ProfileIcon" />
+                        </Avatar>
                       </div>
                       <div className="flex flex-col justify-center">
                         <p className="text-[#000000] text-base font-semibold cursor-pointer">
@@ -446,12 +448,32 @@ const ProductDetail = ({ productDetails }) => {
               )}
               <div className="flex justify-center items-center pt-5 gap-10">
                 <Typography sx={{ fontWeight: 600, color: "black" }}>
-                  Share
+                  Share :
                 </Typography>
-                <Image src={facebook} alt="icon" />
-                <Image src={linkedin} alt="icon" />
-                <Image src={youtube} alt="icon" />
-                <Image src={instagram} alt="icon" />
+                <a
+                  className="p-2 rounded-lg bg-colorWhite cursor-pointer"
+                  href={`${productDetails.data.product.data.branchInfo.shop_info.shop_social_link.facebook}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Image src={facebookIcon} alt="facebookIcon" />
+                </a>
+                <a
+                  className="p-2 rounded-lg bg-colorWhite cursor-pointer"
+                  href={`${productDetails.data.product.data.branchInfo.shop_info.shop_social_link.instagram}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Image src={instagramIcon} alt="instagramIcon" />
+                </a>
+                <a
+                  className="p-2 rounded-lg bg-colorWhite cursor-pointer"
+                  href={`${productDetails.data.product.data.branchInfo.shop_info.shop_social_link.website}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Image src={googleIcon} alt="googleIcon" />
+                </a>
               </div>
             </div>
           </div>
@@ -462,7 +484,7 @@ const ProductDetail = ({ productDetails }) => {
             Special Products
           </p>
 
-          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-10 place-items-center mb-10">
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 place-items-center mb-10">
             {productDetails.data.product.related &&
               productDetails.data.product.related?.map((product) => (
                 <ProductCard product={product} key={product.id} />

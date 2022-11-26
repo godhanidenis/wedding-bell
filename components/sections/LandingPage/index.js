@@ -27,7 +27,6 @@ const LandingPage = () => {
     loading,
     error,
   } = useSelector((state) => state.products);
-  // const { shops } = useSelector((state) => state.shops);
 
   const {
     shopsLimit,

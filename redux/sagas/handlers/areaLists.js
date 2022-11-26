@@ -11,6 +11,6 @@ export function* handleGetAreaLists() {
 
     yield put(loadAreaListsSuccess(response.data.areaList));
   } catch (error) {
-    yield put(loadAreaListsError(error));
+    yield put(loadAreaListsError(error.message));
   }
 }

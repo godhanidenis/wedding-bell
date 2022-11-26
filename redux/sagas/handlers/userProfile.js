@@ -8,9 +8,8 @@ import { requestGetUserProfile } from "../requests/userProfile";
 export function* handleGetUserProfile() {
   try {
     const response = yield call(requestGetUserProfile);
-
     yield put(loadUserProfileSuccess(response.data.user));
   } catch (error) {
-    yield put(loadUserProfileError(error));
+    yield put(loadUserProfileError(error.message));
   }
 }
