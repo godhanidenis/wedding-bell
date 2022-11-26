@@ -37,6 +37,7 @@ import {
   shopFollowToggle,
 } from "../../redux/ducks/userProfile";
 import { productLike } from "../../graphql/mutations/products";
+import Link from "next/link";
 
 const ProductDetail = ({ productDetails }) => {
   console.log("productDetails", productDetails);
@@ -187,12 +188,16 @@ const ProductDetail = ({ productDetails }) => {
                       />
                     </div>
                     <div className="flex flex-col justify-center">
-                      <p className="text-[#000000] text-base font-semibold cursor-pointer hover:text-colorPrimary">
-                        {
-                          productDetails.data.product.data.branchInfo?.shop_info
-                            .shop_name
-                        }
-                      </p>
+                      <Link
+                        href={`/shop/${productDetails.data.product.data.branchInfo?.shop_id}`}
+                      >
+                        <p className="text-[#000000] text-base font-semibold cursor-pointer hover:text-colorPrimary">
+                          {
+                            productDetails.data.product.data.branchInfo
+                              ?.shop_info.shop_name
+                          }
+                        </p>
+                      </Link>
                       <p className="text-[#888888] text-sm font-normal">
                         25 days ago
                       </p>

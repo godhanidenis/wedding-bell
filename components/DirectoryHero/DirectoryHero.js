@@ -1,3 +1,5 @@
+import React from "react";
+
 const DirectoryHero = ({ title, bgImg }) => {
   return (
     <section

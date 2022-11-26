@@ -1,22 +1,23 @@
 import React from "react";
-import Header from "../../components/Layout/Header";
 import DirectoryHero from "../../components/DirectoryHero/DirectoryHero";
-import LandingBg from "../../assets/shopbackroundimg.png";
+import ShopLandingBg from "../../assets/shopCoverImage.png";
 import { Avatar, Button, Rating, TextField, Typography } from "@mui/material";
 import ShareIcon from "@mui/icons-material/Share";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import Filter from "../../components/Filters/index";
 import UpperFilter from "../../components/Filters/UpperFilter/UpperFilter";
-// import InfiniteScroll from 'react-infinite-scroll-component';
-import { shopDetails } from "../../graphql/queries/shopDeatils";
+import InfiniteScroll from "react-infinite-scroll-component";
 import ProductImage from "../../assets/product-image.png";
 import heartIcon from "../../assets/svg/heart.svg";
 import Image from "next/image";
 import Slider from "react-slick";
-// import { useSelector } from 'react-redux';
-const ShopDetails = ({}) => {
+import { useSelector } from "react-redux";
+import { getShopDetails } from "../../graphql/queries/shopQueries";
+import ShopHeaderSection from "../../components/sections/shop-section/ShopHeaderSection";
+
+const ShopDetail = ({ shopDetails }) => {
+ 
   const result = {};
-  console.log("------------------------>>>>>>", result?.data?.shop);
   const shopInfo = result?.data?.shop;
   const items = [0, 1, 2].map((itm) => {
     return (
@@ -32,10 +33,12 @@ const ShopDetails = ({}) => {
     slidesToScroll: 1,
   };
   return (
-    <div>
-      <Header />
-      <DirectoryHero bgImg={LandingBg.src} />
-      <div className=" px-4  xl:px-64">
+    <div className="bg-colorWhite pb-20 md:pb-28">
+      <DirectoryHero bgImg={ShopLandingBg.src} />
+      <div className="container">
+        <ShopHeaderSection shopDetails={shopDetails.data.shop} />
+      </div>
+      {/* <div className="px-4  xl:px-64">
         <div className="rounded-md shadow-md bg-[#F5F5F5] p-4">
           <div className="flex">
             <div className="flex-none w-14 ">
@@ -82,7 +85,7 @@ const ShopDetails = ({}) => {
             </button>
           </div>
         </div>
-        <div class="grid grid-cols-4 gap-4 mt-6">
+        <div className="grid grid-cols-4 gap-4 mt-6">
           <div className="bg-[#F5F5F5] rounded-md p-4 text-center">
             <p className="text-colorPrimary font-bold">TOTAL PRODUCTS</p>{" "}
             <p className=" text-balck font-bold text-center">25</p>
@@ -104,7 +107,8 @@ const ShopDetails = ({}) => {
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
+
       <div className="grid grid-cols-8 gap-2 sm:gap-4 container mt-8">
         <div className="lg:col-span-2 hidden lg:block ">
           <Filter />
@@ -342,8 +346,8 @@ const ShopDetails = ({}) => {
       </div>
       <div className="bg-[#F5F5F5] p-4 mx-12 mt-8">
         <div className="rounded-md shadow-md  mx-2 mt-2">
-          <div class="flex gap-7">
-            <div class="w-1/2 bg-colorPrimary p-4 rounded-md">
+          <div className="flex gap-7">
+            <div className="w-1/2 bg-colorPrimary p-4 rounded-md">
               <div className="flex justify-between">
                 <p className="text-lg font-bold text-white">
                   Rating + Distrbushion
@@ -351,7 +355,7 @@ const ShopDetails = ({}) => {
                 <p className="text-lg font-bold text-white">20 Review</p>
               </div>
             </div>
-            <div class="w-1/2 p-4 rounded-md">
+            <div className="w-1/2 p-4 rounded-md">
               <p className="text-lg font-bold text-black">Reviw Mitvin Shop</p>
               <p className="text-lg font-bold text-black">Rate vendor</p>
               <div className="flex justify-between">
@@ -394,17 +398,17 @@ const ShopDetails = ({}) => {
     </div>
   );
 };
+export default ShopDetail;
 
-// export async function getServerSideProps(context) {
-//   try {
-//     const shopId = context.params.id;
-//     console.log(">>>>>>>", shopId);
-//     const result = await shopDetails({ id: shopId });
-//     // Pass data to the page via props
-//     return { props: { result } };
-//   } catch (error) {
-//     console.log(error);
-//     throw error;
-//   }
-// }
-export default ShopDetails;
+export async function getServerSideProps(context) {
+  try {
+    const shopId = context.params.id;
+
+    const shopDetails = await getShopDetails({ id: shopId });
+
+    return { props: { shopDetails } };
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+}

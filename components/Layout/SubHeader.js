@@ -14,8 +14,6 @@ const SubHeader = () => {
   const [menCategory, setMenCategory] = useState([]);
   const [womenCategory, setWomenCategory] = useState([]);
 
-  const [categoryClassName, setCategoryClassName] = useState("");
-
   const { categories } = useSelector((state) => state.categories);
   const dispatch = useDispatch();
   const productsFiltersReducer = useSelector(
