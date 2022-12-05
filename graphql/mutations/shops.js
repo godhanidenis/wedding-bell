@@ -20,3 +20,26 @@ export const shopFollow = async (payload) => {
   });
   return results;
 };
+
+export const shopReview = async (payload) => {
+  const results = await client.mutate({
+    mutation: gql`
+      mutation CreateShopReview($shopInfo: ShopReviewInput) {
+        createShopReview(shopInfo: $shopInfo) {
+          id
+          shop_id
+          user_id
+          stars
+          message
+          flag
+          user_name
+          user_type
+        }
+      }
+    `,
+    variables: {
+      shopInfo: payload.shopInfo,
+    },
+  });
+  return results;
+};

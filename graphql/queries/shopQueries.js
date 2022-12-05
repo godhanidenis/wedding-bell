@@ -107,6 +107,8 @@ export const getShopDetails = async (payload) => {
             id
             shop_id
             user_id
+            user_name
+            user_type
             stars
             message
             flag
@@ -129,6 +131,23 @@ export const getShopDetails = async (payload) => {
             flag
             product_info {
               id
+              product_name
+              product_description
+              product_image {
+                front
+                back
+                side
+              }
+              product_video
+              product_color
+              categoryInfo {
+                id
+                category_name
+                category_type
+                flag
+              }
+              flag
+              productLikes
             }
           }
         }

@@ -48,7 +48,7 @@ const ShopHeaderSection = ({ shopDetails }) => {
         <div className="grid grid-cols-12 w-full mt-[-50px] rounded-xl bg-[#F5F5F5] pl-[4%] pr-[4%]">
           <div className="col-span-12">
             <div className="flex flex-col	sm:flex-row	">
-              <div className="mt-[-40px] sm:mt-[-50px] uni-details-logo flex justify-center">
+              <div className="mt-[-40px] sm:mt-[-50px] flex justify-center">
                 <Image
                   src={shopDetails.shop_logo}
                   alt="shop logo"
