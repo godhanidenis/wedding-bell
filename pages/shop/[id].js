@@ -38,6 +38,9 @@ import { useRouter } from "next/router";
 import SubHeader from "../../components/Layout/SubHeader";
 
 const ShopDetail = ({ shopDetails }) => {
+  const [loadingSubmitReview, setLoadingSubmitReview] = useState(false);
+  const [submitButtonDisable, setSubmitButtonDisable] = useState(false);
+
   const [stars, setStars] = useState(0);
   const [message, setMessage] = useState("");
 
@@ -55,10 +58,6 @@ const ShopDetail = ({ shopDetails }) => {
 
   const dispatch = useDispatch();
 
-  const { userProfile, isAuthenticate } = useSelector(
-    (state) => state.userProfile
-  );
-
   const {
     productsLimit,
     productsCount,
@@ -68,6 +67,9 @@ const ShopDetail = ({ shopDetails }) => {
     error,
   } = useSelector((state) => state.products);
 
+  const { userProfile, isAuthenticate } = useSelector(
+    (state) => state.userProfile
+  );
   const productsFiltersReducer = useSelector(
     (state) => state.productsFiltersReducer
   );
@@ -136,6 +138,15 @@ const ShopDetail = ({ shopDetails }) => {
       setAvgShopRating(Math.round((rating += itm.stars) / shopReviews.length))
     );
   }, [shopReviews]);
+
+  useEffect(() => {
+    const reviewedShopsByUser = shopReviews.find(
+      (itm) => itm.user_id === userProfile.id
+    );
+    reviewedShopsByUser
+      ? setSubmitButtonDisable(true)
+      : setSubmitButtonDisable(false);
+  }, [router.query.id, userProfile.id, shopReviews]);
 
   useEffect(() => {
     dispatch(
@@ -370,10 +381,14 @@ const ShopDetail = ({ shopDetails }) => {
                 </div>
                 <div className="flex justify-end gap-6 mt-5">
                   <button
-                    className="bg-colorPrimary text-white p-2 text-base rounded-md"
+                    disabled={submitButtonDisable}
+                    className={`bg-colorPrimary text-white p-2 text-base rounded-md flex items-center justify-center ${
+                      submitButtonDisable && "opacity-50 cursor-not-allowed"
+                    }`}
                     onClick={() => {
                       if (isAuthenticate) {
                         if (stars > 0 && message !== "") {
+                          setLoadingSubmitReview(true);
                           shopReview({
                             shopInfo: {
                               message: message,
@@ -387,8 +402,10 @@ const ShopDetail = ({ shopDetails }) => {
                               toast.success("Review Submitted Successfully!!", {
                                 theme: "colored",
                               });
+                              setLoadingSubmitReview(false);
                             },
                             (error) => {
+                              setLoadingSubmitReview(false);
                               toast.error("Review not Submitted!!", {
                                 theme: "colored",
                               });
@@ -404,6 +421,13 @@ const ShopDetail = ({ shopDetails }) => {
                       }
                     }}
                   >
+                    {loadingSubmitReview && (
+                      <CircularProgress
+                        size={20}
+                        color="primary"
+                        sx={{ color: "white", mr: 1 }}
+                      />
+                    )}
                     Submit Review
                   </button>
                 </div>
@@ -493,7 +517,7 @@ const ShopCommentsSection = ({ review }) => {
                     </div>
                     <div className=" text-[#888888]">{review.user_type}</div>
                   </div>
-                  <div className="border rounded-lg p-2 flex items-center gap-1">
+                  <div className="border rounded-lg p-2 flex items-center gap-1 bg-colorWhite">
                     <StarIcon fontSize="medium" className="text-yellow-400" />
                     <p className="text-colorBlack font-semibold">
                       {review.stars}
