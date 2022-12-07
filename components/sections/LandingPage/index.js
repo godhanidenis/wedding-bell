@@ -154,11 +154,6 @@ const LandingPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, shopPageSkip]);
 
-  useEffect(() => {
-    dispatch(loadCategoriesStart());
-    dispatch(loadAreaListsStart());
-  }, [dispatch]);
-
   return (
     <>
       <DirectoryHero bgImg={LandingBg.src} />

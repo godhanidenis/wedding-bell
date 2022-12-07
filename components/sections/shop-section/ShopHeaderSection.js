@@ -10,14 +10,21 @@ import { shopFollow } from "../../../graphql/mutations/shops";
 import { useDispatch, useSelector } from "react-redux";
 import { AuthTypeModal } from "../../core/Enum";
 import AuthModal from "../../core/AuthModal";
+import { useRouter } from "next/router";
 
-const ShopHeaderSection = ({ shopDetails }) => {
+const ShopHeaderSection = ({
+  shopDetails,
+  totalReview,
+  totalFollowers,
+  getAllFollowers,
+  totalProducts,
+}) => {
   console.log("------------------------>>>>>>", shopDetails);
   const [shopFollowByUser, setShopFollowByUser] = useState(false);
-  const [totalProducts, setTotalProducts] = useState(0);
 
   const [open, setOpen] = useState(false);
   const [authTypeModal, setAuthTypeModal] = useState();
+  const router = useRouter();
 
   const dispatch = useDispatch();
   const { userProfile, isAuthenticate } = useSelector(
@@ -25,23 +32,19 @@ const ShopHeaderSection = ({ shopDetails }) => {
   );
 
   useEffect(() => {
-    var count = 0;
-    shopDetails.branch_info.map((itm) =>
-      setTotalProducts((count += itm.product_info?.length))
-    );
-  }, [shopDetails.branch_info]);
-
-  useEffect(() => {
     if (!isAuthenticate) {
       setShopFollowByUser(false);
     }
 
-    userProfile.shop_follower_list?.map((itm) =>
-      itm.shop_id === shopDetails.id
-        ? setShopFollowByUser(true)
-        : setShopFollowByUser(false)
+    const followedShopsByUser = userProfile.shop_follower_list?.find(
+      (itm) => itm.shop_id === router.query.id
     );
-  }, [isAuthenticate, shopDetails.id, userProfile]);
+
+    followedShopsByUser
+      ? setShopFollowByUser(true)
+      : setShopFollowByUser(false);
+  }, [isAuthenticate, router.query.id, shopFollowByUser, userProfile]);
+
   return (
     <>
       <div className="flex justify-center container">
@@ -93,7 +96,7 @@ const ShopHeaderSection = ({ shopDetails }) => {
                         if (isAuthenticate) {
                           shopFollow({
                             shopInfo: {
-                              shop_id: shopDetails.id,
+                              shop_id: router.query.id,
                               user_id: userProfile.id,
                             },
                           }).then(
@@ -109,13 +112,14 @@ const ShopHeaderSection = ({ shopDetails }) => {
                                   : shopFollowToggle({
                                       shopInfo: {
                                         key: "unFollow",
-                                        value: shopDetails.id,
+                                        value: router.query.id,
                                       },
                                     })
                               );
                               toast.success(res.data.shopFollower.message, {
                                 theme: "colored",
                               });
+                              getAllFollowers();
                             },
                             (error) => {
                               toast.error(error.message, { theme: "colored" });
@@ -155,13 +159,13 @@ const ShopHeaderSection = ({ shopDetails }) => {
         <div className="bg-[#F5F5F5] rounded-xl p-4 text-center">
           <p className="text-colorPrimary font-bold">FOLLOWERS</p>
           <p className=" text-colorBlack font-bold text-center mt-2">
-            {shopDetails?.shopFollowerCount}
+            {totalFollowers}
           </p>
         </div>
         <div className="bg-[#F5F5F5] rounded-xl p-4 text-center">
           <p className="text-colorPrimary font-bold">REVIEWS</p>
           <p className=" text-colorBlack font-bold text-center mt-2">
-            {shopDetails?.shopReviewCount}
+            {totalReview}
           </p>
         </div>
         <div className="bg-[#F5F5F5] rounded-xl p-4 text-center">

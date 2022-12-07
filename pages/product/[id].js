@@ -58,11 +58,14 @@ const ProductDetail = ({ productDetails }) => {
       setProductLikeByUser(false);
     }
 
-    userProfile.shop_follower_list?.map((itm) =>
-      itm.shop_id === productDetails.data.product.data.branchInfo?.shop_id
-        ? setShopFollowByUser(true)
-        : setShopFollowByUser(false)
+    const followedShopsByUser = userProfile.shop_follower_list?.find(
+      (itm) =>
+        itm.shop_id === productDetails.data.product.data.branchInfo?.shop_id
     );
+
+    followedShopsByUser
+      ? setShopFollowByUser(true)
+      : setShopFollowByUser(false);
 
     const likedProductByUser = userProfile.product_like_list?.find(
       (itm) => itm.id === productDetails.data.product.data.id
@@ -191,12 +194,14 @@ const ProductDetail = ({ productDetails }) => {
                       <Link
                         href={`/shop/${productDetails.data.product.data.branchInfo?.shop_id}`}
                       >
-                        <p className="text-[#000000] text-base font-semibold cursor-pointer hover:text-colorPrimary">
-                          {
-                            productDetails.data.product.data.branchInfo
-                              ?.shop_info.shop_name
-                          }
-                        </p>
+                        <a target="_blank">
+                          <p className="text-[#000000] text-base font-semibold cursor-pointer hover:text-colorPrimary">
+                            {
+                              productDetails.data.product.data.branchInfo
+                                ?.shop_info.shop_name
+                            }
+                          </p>
+                        </a>
                       </Link>
                       <p className="text-[#888888] text-sm font-normal">
                         25 days ago
@@ -209,13 +214,12 @@ const ProductDetail = ({ productDetails }) => {
                     <div className="flex justify-center flex-col gap-1">
                       <Rating
                         name="text-feedback"
-                        value={
+                        value={Math.round(
                           productDetails.data.product.data.branchInfo?.shop_info
                             .shop_rating
-                        }
+                        )}
                         readOnly
                         size="large"
-                        precision={0.5}
                         emptyIcon={<StarIcon fontSize="inherit" />}
                       />
                       <p className="text-[#888888] text-lg font-normal flex items-center">

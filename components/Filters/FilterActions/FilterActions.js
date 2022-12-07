@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Switch } from "@mui/material";
 
-const FilterActions = ({ byShop, setByShop }) => {
+const FilterActions = ({ byShop, setByShop, productByShop }) => {
   const [checked, setChecked] = useState(byShop);
 
   const switchHandler = (event) => {
@@ -16,11 +16,13 @@ const FilterActions = ({ byShop, setByShop }) => {
           Filter By
         </button>
       </div>
-      <div className="flex items-center gap-2">
-        <p>Filter By Product</p>
-        <Switch checked={checked} onChange={switchHandler} />
-        <p>Filter By Shop</p>
-      </div>
+      {!productByShop && (
+        <div className="flex items-center gap-2">
+          <p>Filter By Product</p>
+          <Switch checked={checked} onChange={switchHandler} />
+          <p>Filter By Shop</p>
+        </div>
+      )}
     </>
   );
 };

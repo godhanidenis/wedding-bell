@@ -40,7 +40,7 @@ const ProductByShopFilter = ({ setProductPageSkip }) => {
     productsFiltersReducer.appliedProductsFilters &&
       setSelectedShopName(
         productsFiltersReducer.appliedProductsFilters.shopId.selectedValue.map(
-          (itm) => shopsData.find((i) => i.id === itm).shop_name
+          (itm) => shopsData.find((i) => i.id === itm)?.shop_name
         )
       );
   }, [productsFiltersReducer.appliedProductsFilters, shopsData]);

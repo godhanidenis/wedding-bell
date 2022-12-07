@@ -107,16 +107,17 @@ export const getShopDetails = async (payload) => {
             id
             shop_id
             user_id
-            user_name
-            user_type
             stars
             message
             flag
+            user_name
+            user_type
           }
           shop_rating
           branch_info {
             id
             shop_id
+
             branch_address
             branch_pinCode
             manager_name
@@ -146,8 +147,58 @@ export const getShopDetails = async (payload) => {
                 category_type
                 flag
               }
+
               flag
               productLikes
+              branchInfo {
+                id
+                shop_id
+                shop_info {
+                  id
+                  user_id
+                  shop_name
+                  shop_logo
+                  shop_cover_image
+                  shop_images {
+                    links
+                  }
+                  shop_video
+                  shop_type
+                  is_live
+                  flag
+                  form_steps
+                  shop_social_link {
+                    facebook
+                    instagram
+                    website
+                  }
+                  shopFollowerCount
+                  shopReviewCount
+                  shop_review {
+                    id
+                    shop_id
+                    user_id
+                    user_name
+                    user_type
+                    stars
+                    message
+                    flag
+                  }
+                  shop_rating
+                }
+                branch_address
+                branch_pinCode
+                manager_name
+                manager_contact
+                branch_time {
+                  week
+                  open_time
+                  close_time
+                  is_close
+                }
+                branch_type
+                flag
+              }
             }
           }
         }
@@ -158,4 +209,48 @@ export const getShopDetails = async (payload) => {
     },
   });
   return result;
+};
+
+export const getShopReviews = async (payload) => {
+  const results = await client.query({
+    query: gql`
+      query ShopReview($shopReviewId: String) {
+        shopReview(id: $shopReviewId) {
+          id
+          shop_id
+          user_id
+          stars
+          message
+          flag
+          user_name
+          user_type
+        }
+      }
+    `,
+    variables: {
+      shopReviewId: payload.id,
+    },
+    fetchPolicy: "no-cache",
+  });
+
+  return results;
+};
+
+export const getShopFollowers = async (payload) => {
+  const results = await client.query({
+    query: gql`
+      query ShopFollower($shopFollowerId: String) {
+        shopFollower(id: $shopFollowerId) {
+          shop_id
+          user_id
+        }
+      }
+    `,
+    variables: {
+      shopFollowerId: payload.id,
+    },
+    fetchPolicy: "no-cache",
+  });
+
+  return results;
 };
