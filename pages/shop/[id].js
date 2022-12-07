@@ -254,101 +254,111 @@ const ShopDetail = ({ shopDetails }) => {
                     </div>
                   </div>
                 </div>
-                <div className="mt-5 flex items-center justify-between p-1">
-                  <div className="flex items-center gap-1">
+
+                <div className="grid grid-cols-6 gap-4 items-center mt-5 p-1">
+                  <div className="flex items-center gap-1 col-span-1">
                     <p className="text-colorWhite font-semibold">5</p>
                     <StarIcon fontSize="medium" className="text-yellow-400" />
                   </div>
-                  <div className="flex">
+
+                  <div className="self-center col-span-4">
                     <CustomBorderLinearProgress
-                      color="secondary"
                       variant="determinate"
-                      value={50}
+                      value={
+                        (shopReviews.filter((itm) => itm.stars === 5).length *
+                          100) /
+                        shopReviews.length
+                      }
                     />
                   </div>
-                  <div className="">
-                    <p className="text-base font-normal text-white">
-                      {shopReviews.filter((itm) => itm.stars === 5).length}{" "}
-                      Review
-                    </p>
-                  </div>
+                  <p className="text-base font-normal text-white text-right col-span-1">
+                    {shopReviews.filter((itm) => itm.stars === 5).length} Review
+                  </p>
                 </div>
-                <div className="mt-5 flex items-center justify-between p-1">
-                  <div className="flex items-center gap-1">
+                <div className="grid grid-cols-6 gap-4 items-center mt-5 p-1">
+                  <div className="flex items-center gap-1 col-span-1">
                     <p className="text-colorWhite font-semibold">4</p>
                     <StarIcon fontSize="medium" className="text-yellow-400" />
                   </div>
-                  <div className="">
+
+                  <div className="self-center col-span-4">
                     <CustomBorderLinearProgress
                       variant="determinate"
-                      value={40}
-                      setcolor="#5451F9"
+                      value={
+                        (shopReviews.filter((itm) => itm.stars === 4).length *
+                          100) /
+                        shopReviews.length
+                      }
                     />
                   </div>
-                  <div className="">
-                    <p className="text-base font-normal text-white">
-                      {shopReviews.filter((itm) => itm.stars === 4).length}{" "}
-                      Review
-                    </p>
-                  </div>
+                  <p className="text-base font-normal text-white text-right col-span-1">
+                    {shopReviews.filter((itm) => itm.stars === 4).length} Review
+                  </p>
                 </div>
-                <div className="mt-5 flex items-center justify-between p-1">
-                  <div className="flex items-center gap-1">
+
+                <div className="grid grid-cols-6 gap-4 items-center mt-5 p-1">
+                  <div className="flex items-center gap-1 col-span-1">
                     <p className="text-colorWhite font-semibold">3</p>
                     <StarIcon fontSize="medium" className="text-yellow-400" />
                   </div>
-                  <div className="">
+
+                  <div className="self-center col-span-4">
                     <CustomBorderLinearProgress
                       variant="determinate"
-                      value={50}
-                      setcolor="#5451F9"
+                      value={
+                        (shopReviews.filter((itm) => itm.stars === 3).length *
+                          100) /
+                        shopReviews.length
+                      }
                     />
                   </div>
-                  <div className="">
-                    <p className="text-base font-normal text-white">
-                      {shopReviews.filter((itm) => itm.stars === 3).length}{" "}
-                      Review
-                    </p>
-                  </div>
+                  <p className="text-base font-normal text-white text-right col-span-1">
+                    {shopReviews.filter((itm) => itm.stars === 3).length} Review
+                  </p>
                 </div>
-                <div className="mt-5 flex items-center justify-between p-1">
-                  <div className="flex items-center gap-1">
+
+                <div className="grid grid-cols-6 gap-4 items-center mt-5 p-1">
+                  <div className="flex items-center gap-1 col-span-1">
                     <p className="text-colorWhite font-semibold">2</p>
                     <StarIcon fontSize="medium" className="text-yellow-400" />
                   </div>
-                  <div className="">
+
+                  <div className="self-center col-span-4">
                     <CustomBorderLinearProgress
                       variant="determinate"
-                      value={50}
-                      setcolor="#5451F9"
+                      value={
+                        (shopReviews.filter((itm) => itm.stars === 2).length *
+                          100) /
+                        shopReviews.length
+                      }
                     />
                   </div>
-                  <div className="">
-                    <p className="text-base font-normal text-white">
-                      {shopReviews.filter((itm) => itm.stars === 2).length}{" "}
-                      Review
-                    </p>
-                  </div>
+                  <p className="text-base font-normal text-white text-right col-span-1">
+                    {shopReviews.filter((itm) => itm.stars === 2).length} Review
+                  </p>
                 </div>
-                <div className="mt-5 flex items-center justify-between p-1">
-                  <div className="flex items-center gap-1">
+
+                <div className="grid grid-cols-6 gap-4 items-center mt-5 p-1">
+                  <div className="flex items-center gap-1 col-span-1">
                     <p className="text-colorWhite font-semibold">1</p>
                     <StarIcon fontSize="medium" className="text-yellow-400" />
                   </div>
-                  <div className="">
+
+                  <div className="self-center col-span-4">
                     <CustomBorderLinearProgress
                       variant="determinate"
-                      value={50}
-                      setcolor="#5451F9"
+                      value={
+                        (shopReviews.filter((itm) => itm.stars === 1).length *
+                          100) /
+                        shopReviews.length
+                      }
                     />
                   </div>
-                  <div className="">
-                    <p className="text-base font-normal text-white">
-                      {shopReviews.filter((itm) => itm.stars === 1).length}{" "}
-                      Review
-                    </p>
-                  </div>
+                  <p className="text-base font-normal text-white text-right col-span-1">
+                    {shopReviews.filter((itm) => itm.stars === 1).length} Review
+                  </p>
                 </div>
+
                 <p className="mt-5 text-colorWhite font-normal text-base">
                   Last Review Updated on 20 Apr 2022
                 </p>
@@ -484,13 +494,11 @@ export async function getServerSideProps(context) {
 }
 
 const CustomBorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-  height: 10,
-  borderRadius: 5,
-  backgroundColor: "#000000",
+  height: 12,
+  backgroundColor: "#ffffff",
 
   [`& .${linearProgressClasses.bar}`]: {
-    borderRadius: 5,
-    backgroundColor: "#308fe8",
+    backgroundColor: "#000000",
   },
 }));
 
