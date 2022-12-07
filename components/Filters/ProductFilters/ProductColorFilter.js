@@ -27,7 +27,8 @@ const ProductColorFilter = ({ setProductPageSkip }) => {
   const productsFiltersReducer = useSelector(
     (state) => state.productsFiltersReducer
   );
-
+  const colors=productsFiltersReducer.appliedProductsFilters.productColor
+  .selectedValue
   return (
     <CardInteractive
       cardTitle="Colors"
@@ -58,14 +59,14 @@ const ProductColorFilter = ({ setProductPageSkip }) => {
                 <Checkbox
                   icon={icon}
                   checkedIcon={checkedIcon}
-                  style={{ marginRight: 8 }}
+                  style={{ marginRight: 8 ,color: selected ? colors : ""  }}
                   checked={selected}
                 />
                 {capitalize(option)}
               </li>
             )}
             renderInput={(params) => (
-              <TextField {...params} label="Colors" placeholder="color" />
+              <TextField {...params} label="Colors" placeholder="color" sx={{color:"red"}}/>
             )}
           />
         </>

@@ -21,6 +21,12 @@ const theme = createTheme({
       main: "#95539B",
     },
   },
+  typography: {
+    fontFamily: [
+        'Kanit', 'sans-serif',
+        'Poppins', 'sans-seri'
+    ].join(','),
+  },
 });
 
 function MyApp({ Component, pageProps }) {
@@ -28,6 +34,9 @@ function MyApp({ Component, pageProps }) {
     <>
       <Head>
         <title>Wedding Bell</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com"></link>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin></link>
+        <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@100;200;300;400;500;600&family=Poppins:wght@100;200;300;400;500;600;800&display=swap" rel="stylesheet"></link>
       </Head>
       <ThemeProvider theme={theme}>
         <ToastContainer />
