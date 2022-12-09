@@ -19,3 +19,9 @@ h6 {
 .container {
   @apply w-[95%] max-w-[1246px] 2xl:max-w-[1536px] mx-auto;
 }
+
+.MuiStepLabel-label.Mui-completed {
+  color: #95539b;
+  font-weight: 600;
+  font-size: medium;
+}

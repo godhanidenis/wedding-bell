@@ -255,109 +255,33 @@ const ShopDetail = ({ shopDetails }) => {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-6 gap-4 items-center mt-5 p-1">
-                  <div className="flex items-center gap-1 col-span-1">
-                    <p className="text-colorWhite font-semibold">5</p>
-                    <StarIcon fontSize="medium" className="text-yellow-400" />
-                  </div>
+                {[5, 4, 3, 2, 1].map((star) => (
+                  <div
+                    className="grid grid-cols-6 gap-4 items-center mt-5 p-1"
+                    key={star}
+                  >
+                    <div className="flex items-center gap-1 col-span-1">
+                      <p className="text-colorWhite font-semibold">{star}</p>
+                      <StarIcon fontSize="medium" className="text-yellow-400" />
+                    </div>
 
-                  <div className="self-center col-span-4">
-                    <CustomBorderLinearProgress
-                      variant="determinate"
-                      value={
-                        (shopReviews.filter((itm) => itm.stars === 5).length *
-                          100) /
-                        shopReviews.length
-                      }
-                    />
+                    <div className="self-center col-span-4">
+                      <CustomBorderLinearProgress
+                        variant="determinate"
+                        value={
+                          (shopReviews.filter((itm) => itm.stars === star)
+                            .length *
+                            100) /
+                          shopReviews.length
+                        }
+                      />
+                    </div>
+                    <p className="text-base font-normal text-white text-right col-span-1">
+                      {shopReviews.filter((itm) => itm.stars === star).length}{" "}
+                      Review
+                    </p>
                   </div>
-                  <p className="text-base font-normal text-white text-right col-span-1">
-                    {shopReviews.filter((itm) => itm.stars === 5).length} Review
-                  </p>
-                </div>
-                <div className="grid grid-cols-6 gap-4 items-center mt-5 p-1">
-                  <div className="flex items-center gap-1 col-span-1">
-                    <p className="text-colorWhite font-semibold">4</p>
-                    <StarIcon fontSize="medium" className="text-yellow-400" />
-                  </div>
-
-                  <div className="self-center col-span-4">
-                    <CustomBorderLinearProgress
-                      variant="determinate"
-                      value={
-                        (shopReviews.filter((itm) => itm.stars === 4).length *
-                          100) /
-                        shopReviews.length
-                      }
-                    />
-                  </div>
-                  <p className="text-base font-normal text-white text-right col-span-1">
-                    {shopReviews.filter((itm) => itm.stars === 4).length} Review
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-6 gap-4 items-center mt-5 p-1">
-                  <div className="flex items-center gap-1 col-span-1">
-                    <p className="text-colorWhite font-semibold">3</p>
-                    <StarIcon fontSize="medium" className="text-yellow-400" />
-                  </div>
-
-                  <div className="self-center col-span-4">
-                    <CustomBorderLinearProgress
-                      variant="determinate"
-                      value={
-                        (shopReviews.filter((itm) => itm.stars === 3).length *
-                          100) /
-                        shopReviews.length
-                      }
-                    />
-                  </div>
-                  <p className="text-base font-normal text-white text-right col-span-1">
-                    {shopReviews.filter((itm) => itm.stars === 3).length} Review
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-6 gap-4 items-center mt-5 p-1">
-                  <div className="flex items-center gap-1 col-span-1">
-                    <p className="text-colorWhite font-semibold">2</p>
-                    <StarIcon fontSize="medium" className="text-yellow-400" />
-                  </div>
-
-                  <div className="self-center col-span-4">
-                    <CustomBorderLinearProgress
-                      variant="determinate"
-                      value={
-                        (shopReviews.filter((itm) => itm.stars === 2).length *
-                          100) /
-                        shopReviews.length
-                      }
-                    />
-                  </div>
-                  <p className="text-base font-normal text-white text-right col-span-1">
-                    {shopReviews.filter((itm) => itm.stars === 2).length} Review
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-6 gap-4 items-center mt-5 p-1">
-                  <div className="flex items-center gap-1 col-span-1">
-                    <p className="text-colorWhite font-semibold">1</p>
-                    <StarIcon fontSize="medium" className="text-yellow-400" />
-                  </div>
-
-                  <div className="self-center col-span-4">
-                    <CustomBorderLinearProgress
-                      variant="determinate"
-                      value={
-                        (shopReviews.filter((itm) => itm.stars === 1).length *
-                          100) /
-                        shopReviews.length
-                      }
-                    />
-                  </div>
-                  <p className="text-base font-normal text-white text-right col-span-1">
-                    {shopReviews.filter((itm) => itm.stars === 1).length} Review
-                  </p>
-                </div>
+                ))}
 
                 <p className="mt-5 text-colorWhite font-normal text-base">
                   Last Review Updated on 20 Apr 2022
