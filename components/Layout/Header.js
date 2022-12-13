@@ -16,6 +16,12 @@ import Autocomplete from "@mui/material/Autocomplete";
 import Badge from "@mui/material/Badge";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import ListAltIcon from "@mui/icons-material/ListAlt";
+import PersonIcon from "@mui/icons-material/Person";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+
 import AuthModal from "../core/AuthModal";
 import ProfileIcon from "../../assets/profile.png";
 import { AuthTypeModal } from "../core/Enum";
@@ -38,6 +44,8 @@ import {
   userLogout,
 } from "../../redux/ducks/userProfile";
 import { changeProductsSearchBarData } from "../../redux/ducks/productsFilters";
+import { toast } from "react-toastify";
+import Router from "next/router";
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -229,6 +237,41 @@ const UserProfile = ({ setAccessToken }) => {
     setAnchorElUser(false);
   };
 
+  const options = [
+    {
+      icon: <FavoriteBorderOutlinedIcon />,
+      name: `wishList (${userProfile?.product_like_list?.length})`,
+
+      func: wishList,
+    },
+    { icon: <ExitToAppIcon />, name: "Logout", func: logoutUser },
+  ];
+  if (userProfile.user_type === "vendor") {
+    options.unshift({
+      icon: <DashboardIcon />,
+      name: "Dashboard",
+      func: dashboard,
+    });
+  }
+
+  function dashboard() {
+    Router.push("/vendor/dashboard");
+  }
+
+  function wishList() {
+    Router.push("/productLike");
+  }
+  function logoutUser() {
+    localStorage.clear();
+    dispatch(userLogout());
+    setAccessToken("");
+    handleProfileClose();
+
+    toast.success("Logout Successfully", {
+      theme: "colored",
+    });
+  }
+
   return (
     <>
       <div
@@ -298,19 +341,16 @@ const UserProfile = ({ setAccessToken }) => {
 
                   <Divider />
 
-                  <MenuItem
-                    onClick={() => {
-                      localStorage.clear();
-                      dispatch(userLogout());
-                      setAccessToken("");
-                      handleProfileClose();
-                    }}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <Logout />
-                      <span className="font-medium text-base">Logout</span>
-                    </div>
-                  </MenuItem>
+                  {options.map((itm) => (
+                    <MenuItem key={itm.name} onClick={handleProfileClose}>
+                      <p
+                        className="flex items-center w-full text-center"
+                        onClick={itm.func}
+                      >
+                        {itm.icon} <span className="ml-4"> {itm.name}</span>
+                      </p>
+                    </MenuItem>
+                  ))}
                 </MenuList>
               </ClickAwayListener>
             </Paper>

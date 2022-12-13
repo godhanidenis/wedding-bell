@@ -1,5 +1,6 @@
 import axios from "axios";
 import FormData from "form-data";
+import appConfig from "../config";
 
 export const MultipleImageUploadFile = async (data) => {
   var formData = new FormData();
@@ -19,5 +20,5 @@ export const MultipleImageUploadFile = async (data) => {
       formData.append(`${i}`, file);
     });
   }
-  return await axios.post("http://localhost:4000/graphql", formData, {});
+  return await axios.post(`${appConfig.appUrl}`, formData, {});
 };

@@ -65,6 +65,7 @@ export const shopRegistration = async (payload) => {
               open_time
               close_time
               is_close
+              is_24Hours_open
             }
             branch_type
             flag
@@ -100,6 +101,7 @@ export const shopRegistration = async (payload) => {
                   open_time
                   close_time
                   is_close
+                  is_24Hours_open
                 }
                 branch_type
                 flag

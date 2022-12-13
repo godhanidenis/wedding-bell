@@ -4,11 +4,14 @@ import {
   Checkbox,
   Divider,
   FormControlLabel,
+  IconButton,
+  MenuItem,
   Radio,
   RadioGroup,
   Step,
   StepLabel,
   Stepper,
+  Switch,
   TextField,
 } from "@mui/material";
 import {
@@ -32,6 +35,11 @@ import { VideoUploadFile } from "../../../services/VideoUploadFile";
 import { shopRegistration } from "../../../graphql/mutations/shops";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
+import AuthModal from "../../../components/core/AuthModal";
+import { AuthTypeModal } from "../../../components/core/Enum";
+import CircularProgress from "@mui/material/CircularProgress";
+import Router from "next/router";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const shopRegistrationSteps = ["Details", "Photos", "Branches"];
 const style = {
@@ -48,7 +56,9 @@ const style = {
   height: "auto",
 };
 const ShopPage = () => {
-  const { userProfile } = useSelector((state) => state.userProfile);
+  const { userProfile, isAuthenticate } = useSelector(
+    (state) => state.userProfile
+  );
 
   const [activeStep, setActiveStep] = useState(0);
   const [completed, setCompleted] = useState([]);
@@ -61,13 +71,13 @@ const ShopPage = () => {
   const [subBranchModalOpen, setSubBranchModalOpen] = useState(false);
 
   const [hours, setHours] = useState([
-    { key: "Sunday", value: ["01:30 PM - 10:50 PM"] },
-    { key: "Monday", value: ["09:15 AM - 11:25 AM"] },
+    { key: "Sunday", value: ["09:00 AM - 08:00 PM"] },
+    { key: "Monday", value: ["09:00 AM - 08:00 PM"] },
     { key: "Tuesday", value: ["09:00 AM - 08:00 PM"] },
     { key: "Wednesday", value: ["09:00 AM - 08:00 PM"] },
     { key: "Thursday", value: ["09:00 AM - 08:00 PM"] },
     { key: "Friday", value: ["09:00 AM - 08:00 PM"] },
-    { key: "Saturday", value: ["09:00 AM - 10:50 AM"] },
+    { key: "Saturday", value: ["09:00 AM - 08:00 PM"] },
   ]);
   const [shopLogo, setShopLogo] = useState("");
   const [uploadShopLogo, setUploadShopLogo] = useState("");
@@ -81,8 +91,18 @@ const ShopPage = () => {
   const [shopVideo, setShopVideo] = useState("");
   const [uploadShopVideo, setUploadShopVideo] = useState("");
 
+  const [individual, setIndividual] = useState(false);
+
   const [sameAsOwner, setSameAsOwner] = useState("False");
-  console.log(sameAsOwner);
+
+  const [open, setOpen] = useState(false);
+  const [authTypeModal, setAuthTypeModal] = useState();
+
+  const [loading, setLoading] = useState(false);
+
+  const [subBranch, setSubBranch] = useState([]);
+
+  const [subBranchEdit, setSubBranchEdit] = useState();
 
   const {
     register,
@@ -139,90 +159,227 @@ const ShopPage = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+  const returnSubBranchData = (val) => {
+    return {
+      branch_address: val.subManagerAddress,
+      branch_pinCode: val.subManagerPinCode,
+      manager_name: val.subManagerFirstName + " " + val.subManagerLastName,
+      manager_contact: val.subManagerPhone,
+      branch_time: hours.map((day) => {
+        return {
+          week: day["key"],
+          open_time:
+            day["value"][0] === "Closed" || day["value"][0] === "Open 24 hours"
+              ? "-"
+              : day["value"][0].split(" - ")[0],
+          close_time:
+            day["value"][0] === "Closed" || day["value"][0] === "Open 24 hours"
+              ? "-"
+              : day["value"][0].split(" - ")[1],
+          is_close: day["value"][0] === "Closed" ? true : false,
+          is_24Hours_open: day["value"][0] === "Open 24 hours" ? true : false,
+        };
+      }),
+      branch_type: "sub",
+    };
+  };
+
   const onSubmit = (data) => {
     if (activeStep !== 2) {
       handleNext();
     } else {
       console.log("Data To be Submitted !!", data);
+      if (isAuthenticate) {
+        setLoading(true);
+        SingleImageUploadFile(uploadShopLogo).then((logoResponse) => {
+          SingleImageUploadFile(uploadShopBackground).then(
+            (backgroundResponse) => {
+              MultipleImageUploadFile(uploadShopImages).then(
+                (imagesResponse) => {
+                  uploadShopVideo !== ""
+                    ? VideoUploadFile(uploadShopVideo).then((videoResponse) => {
+                        shopRegistration({
+                          ownerInfo: {
+                            id: userProfile.id,
+                            first_name: data.first_name,
+                            last_name: data.last_name,
+                            user_email: data.user_email,
+                            user_contact: data.user_email,
+                          },
+                          shopInfo: {
+                            shop_logo: logoResponse.data.data.singleUpload,
+                            shop_cover_image:
+                              backgroundResponse.data.data.singleUpload,
+                            shop_images:
+                              imagesResponse.data.data.multipleUpload.map(
+                                (itm) => {
+                                  return { links: itm };
+                                }
+                              ),
+                            shop_video: videoResponse.data.data.singleUpload,
 
-      SingleImageUploadFile(uploadShopLogo).then((logoResponse) => {
-        SingleImageUploadFile(uploadShopBackground).then(
-          (backgroundResponse) => {
-            MultipleImageUploadFile(uploadShopImages).then((imagesResponse) => {
-              VideoUploadFile(uploadShopVideo).then((videoResponse) => {
-                console.log("logoResponse:::::", logoResponse);
-                console.log("backgroundResponse:::::", backgroundResponse);
-                console.log("imagesResponse:::::", imagesResponse);
-                console.log("videoResponse:::::", videoResponse);
-
-                shopRegistration({
-                  ownerInfo: {
-                    id: userProfile.id,
-                    first_name: data.first_name,
-                    last_name: data.last_name,
-                    user_email: data.user_email,
-                    user_contact: data.user_email,
-                  },
-                  shopInfo: {
-                    shop_logo: logoResponse.data.data.singleUpload,
-                    shop_cover_image: backgroundResponse.data.data.singleUpload,
-                    shop_images: imagesResponse.data.data.multipleUpload.map(
-                      (itm) => {
-                        return { links: itm };
-                      }
-                    ),
-                    shop_video: videoResponse.data.data.singleUpload,
-                    form_steps: "3",
-                    shop_social_link: {
-                      facebook: data.facebook_link,
-                      instagram: data.instagram_link,
-                      website: data.personal_website,
-                    },
-                    shop_name: data.shop_name,
-                    shop_type: "shop",
-                  },
-                  branchInfo: [
-                    {
-                      branch_address: data.address,
-                      branch_pinCode: data.pin_code,
-                      manager_name:
-                        data.manager_first_name + " " + data.manager_last_name,
-                      manager_contact: data.manager_user_contact,
-                      branch_time: hours.map((day) => {
-                        return {
-                          week: day["key"],
-                          open_time:
-                            day["value"][0] === "Closed"
-                              ? "-"
-                              : day["value"][0].split(" - ")[0],
-                          close_time:
-                            day["value"][0] === "Closed"
-                              ? "-"
-                              : day["value"][0].split(" - ")[1],
-                          is_close: day["value"][0] === "Closed" ? true : false,
-                        };
-                      }),
-                      branch_type: "main",
-                    },
-                  ],
-                }).then(
-                  (res) => {
-                    console.log("res:::", res);
-                    toast.success(res.data.createShop.message, {
-                      theme: "colored",
-                    });
-                  },
-                  (error) => {
-                    toast.error(error.message, { theme: "colored" });
-                  }
-                );
-              });
-            });
-          }
-        );
-      });
+                            form_steps: "3",
+                            shop_social_link: {
+                              facebook: individual ? "" : data.facebook_link,
+                              instagram: individual ? "" : data.instagram_link,
+                              website: individual ? "" : data.personal_website,
+                            },
+                            shop_name: data.shop_name,
+                            shop_type: individual ? "individual" : "shop",
+                          },
+                          branchInfo: [
+                            {
+                              branch_address: data.address,
+                              branch_pinCode: data.pin_code,
+                              manager_name:
+                                data.manager_first_name +
+                                " " +
+                                data.manager_last_name,
+                              manager_contact: data.manager_user_contact,
+                              branch_time: hours.map((day) => {
+                                return {
+                                  week: day["key"],
+                                  open_time: individual
+                                    ? "-"
+                                    : day["value"][0] === "Closed" ||
+                                      day["value"][0] === "Open 24 hours"
+                                    ? "-"
+                                    : day["value"][0].split(" - ")[0],
+                                  close_time: individual
+                                    ? "-"
+                                    : day["value"][0] === "Closed" ||
+                                      day["value"][0] === "Open 24 hours"
+                                    ? "-"
+                                    : day["value"][0].split(" - ")[1],
+                                  is_close: individual
+                                    ? false
+                                    : day["value"][0] === "Closed"
+                                    ? true
+                                    : false,
+                                  is_24Hours_open: individual
+                                    ? true
+                                    : day["value"][0] === "Open 24 hours"
+                                    ? true
+                                    : false,
+                                };
+                              }),
+                              branch_type: "main",
+                            },
+                            ...(subBranch.length > 0
+                              ? subBranch.map(returnSubBranchData)
+                              : []),
+                          ],
+                        }).then(
+                          (res) => {
+                            console.log("res:::", res);
+                            toast.success(res.data.createShop.message, {
+                              theme: "colored",
+                            });
+                            setLoading(false);
+                            localStorage.setItem("userHaveAnyShop", true);
+                            Router.push("/vendor/dashboard");
+                          },
+                          (error) => {
+                            setLoading(false);
+                            toast.error(error.message, { theme: "colored" });
+                          }
+                        );
+                      })
+                    : shopRegistration({
+                        ownerInfo: {
+                          id: userProfile.id,
+                          first_name: data.first_name,
+                          last_name: data.last_name,
+                          user_email: data.user_email,
+                          user_contact: data.user_email,
+                        },
+                        shopInfo: {
+                          shop_logo: logoResponse.data.data.singleUpload,
+                          shop_cover_image:
+                            backgroundResponse.data.data.singleUpload,
+                          shop_images:
+                            imagesResponse.data.data.multipleUpload.map(
+                              (itm) => {
+                                return { links: itm };
+                              }
+                            ),
+                          form_steps: "3",
+                          shop_social_link: {
+                            facebook: individual ? "" : data.facebook_link,
+                            instagram: individual ? "" : data.instagram_link,
+                            website: individual ? "" : data.personal_website,
+                          },
+                          shop_name: data.shop_name,
+                          shop_type: individual ? "individual" : "shop",
+                        },
+                        branchInfo: [
+                          {
+                            branch_address: data.address,
+                            branch_pinCode: data.pin_code,
+                            manager_name:
+                              data.manager_first_name +
+                              " " +
+                              data.manager_last_name,
+                            manager_contact: data.manager_user_contact,
+                            branch_time: hours.map((day) => {
+                              return {
+                                week: day["key"],
+                                open_time: individual
+                                  ? "-"
+                                  : day["value"][0] === "Closed" ||
+                                    day["value"][0] === "Open 24 hours"
+                                  ? "-"
+                                  : day["value"][0].split(" - ")[0],
+                                close_time: individual
+                                  ? "-"
+                                  : day["value"][0] === "Closed" ||
+                                    day["value"][0] === "Open 24 hours"
+                                  ? "-"
+                                  : day["value"][0].split(" - ")[1],
+                                is_close: individual
+                                  ? false
+                                  : day["value"][0] === "Closed"
+                                  ? true
+                                  : false,
+                                is_24Hours_open: individual
+                                  ? true
+                                  : day["value"][0] === "Open 24 hours"
+                                  ? true
+                                  : false,
+                              };
+                            }),
+                            branch_type: "main",
+                          },
+                          ...(subBranch.length > 0
+                            ? subBranch.map(returnSubBranchData)
+                            : []),
+                        ],
+                      }).then(
+                        (res) => {
+                          console.log("res:::", res);
+                          toast.success(res.data.createShop.message, {
+                            theme: "colored",
+                          });
+                          setLoading(false);
+                          localStorage.setItem("userHaveAnyShop", true);
+                          Router.push("/vendor/dashboard");
+                        },
+                        (error) => {
+                          setLoading(false);
+                          toast.error(error.message, { theme: "colored" });
+                        }
+                      );
+                }
+              );
+            }
+          );
+        });
+      } else {
+        setOpen(true), setAuthTypeModal(AuthTypeModal.Signin);
+      }
     }
   };
+
   const onError = (errors) => console.log("Errors Occurred !! :", errors);
 
   const onShopLogoPreviewImage = (e) => {
@@ -288,9 +445,20 @@ const ShopPage = () => {
               </Step>
             ))}
           </Stepper>
+
           <>
             {activeStep === 0 && (
               <>
+                <div className="container p-5 mt-5">
+                  <div className="flex items-center gap-2">
+                    <p className="text-lg font-semibold">Shop</p>
+                    <Switch
+                      checked={individual}
+                      onChange={(e) => setIndividual(e.target.checked)}
+                    />
+                    <p className="text-lg font-semibold">Individual</p>
+                  </div>
+                </div>
                 <div className="container bg-colorWhite rounded-lg my-10 p-5 space-y-5">
                   <h3 className="text-colorPrimary text-lg font-semibold leading-8">
                     Owner Details
@@ -441,129 +609,145 @@ const ShopPage = () => {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-center container gap-20">
-                        <div className="w-full">
-                          <Box sx={{ display: "flex" }}>
-                            <CustomTextField
-                              id="input-with-sx"
-                              label="Shop Email"
-                              variant="standard"
-                              className="w-full"
-                              {...register("shop_email", {
-                                required: "Shop Email is required",
+                      {!individual && (
+                        <>
+                          <div className="flex items-center justify-center container gap-20">
+                            <div className="w-full">
+                              <Box sx={{ display: "flex" }}>
+                                <CustomTextField
+                                  id="input-with-sx"
+                                  label="Shop Email"
+                                  variant="standard"
+                                  className="w-full"
+                                  {...register("shop_email", {
+                                    required: "Shop Email is required",
 
-                                pattern: {
-                                  value:
-                                    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                                  message: "Please enter a valid email",
-                                },
-                              })}
-                            />
-                          </Box>
-                          <div className="mt-2">
-                            {errors.shop_email && (
-                              <span style={{ color: "red" }} className="-mb-6">
-                                {errors.shop_email?.message}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-center container gap-20">
-                        <div className="w-full">
-                          <Box sx={{ display: "flex" }}>
-                            <CustomTextField
-                              id="input-with-sx"
-                              label="Personal Website"
-                              variant="standard"
-                              className="w-full"
-                              {...register("personal_website", {
-                                required: "Personal Website is required",
-                              })}
-                            />
-                          </Box>
-                          <div className="mt-2">
-                            {errors.personal_website && (
-                              <span style={{ color: "red" }} className="-mb-6">
-                                {errors.personal_website?.message}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="container flex gap-20 w-full justify-between items-center">
-                        <div className="w-full">
-                          <Box sx={{ display: "flex" }}>
-                            <CustomTextField
-                              id="input-with-sx"
-                              label="Facebook Link"
-                              variant="standard"
-                              className="w-full"
-                              {...register("facebook_link", {
-                                required: "Facebook Link is required",
-                              })}
-                            />
-                          </Box>
-                          <div className="mt-2">
-                            {errors.facebook_link && (
-                              <span style={{ color: "red" }} className="-mb-6">
-                                {errors.facebook_link?.message}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                        <div className="w-full">
-                          <Box sx={{ display: "flex" }}>
-                            <CustomTextField
-                              id="input-with-sx"
-                              label="Instagram Link"
-                              variant="standard"
-                              className="w-full"
-                              {...register("instagram_link", {
-                                required: "Instagram Link is required",
-                              })}
-                            />
-                          </Box>
-                          <div className="mt-2">
-                            {errors.instagram_link && (
-                              <span style={{ color: "red" }} className="-mb-6">
-                                {errors.instagram_link?.message}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="container flex gap-2 w-full flex-col">
-                        <p className="flex items-center text-colorBlack text-lg">
-                          Hours
-                        </p>
-                        <div
-                          className="w-full border border-colorBlack p-3 rounded-lg flex items-center justify-between cursor-pointer text-colorBlack text-base font-semibold"
-                          onClick={() => {
-                            setHoursModalOpen(true);
-                          }}
-                        >
-                          <div>
-                            {hours.map((day, index) => (
-                              <div
-                                className="flex items-center gap-2"
-                                key={index}
-                              >
-                                {day["key"]} :
-                                <div className="flex items-center gap-5">
-                                  {day["value"]?.map((time, index) => (
-                                    <p key={index}>{time}</p>
-                                  ))}
-                                </div>
+                                    pattern: {
+                                      value:
+                                        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                                      message: "Please enter a valid email",
+                                    },
+                                  })}
+                                />
+                              </Box>
+                              <div className="mt-2">
+                                {errors.shop_email && (
+                                  <span
+                                    style={{ color: "red" }}
+                                    className="-mb-6"
+                                  >
+                                    {errors.shop_email?.message}
+                                  </span>
+                                )}
                               </div>
-                            ))}
+                            </div>
                           </div>
-                          <KeyboardArrowRightIcon />
-                        </div>
-                      </div>
+
+                          <div className="flex items-center justify-center container gap-20">
+                            <div className="w-full">
+                              <Box sx={{ display: "flex" }}>
+                                <CustomTextField
+                                  id="input-with-sx"
+                                  label="Personal Website"
+                                  variant="standard"
+                                  className="w-full"
+                                  {...register("personal_website", {
+                                    required: "Personal Website is required",
+                                  })}
+                                />
+                              </Box>
+                              <div className="mt-2">
+                                {errors.personal_website && (
+                                  <span
+                                    style={{ color: "red" }}
+                                    className="-mb-6"
+                                  >
+                                    {errors.personal_website?.message}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="container flex gap-20 w-full justify-between items-center">
+                            <div className="w-full">
+                              <Box sx={{ display: "flex" }}>
+                                <CustomTextField
+                                  id="input-with-sx"
+                                  label="Facebook Link"
+                                  variant="standard"
+                                  className="w-full"
+                                  {...register("facebook_link", {
+                                    required: "Facebook Link is required",
+                                  })}
+                                />
+                              </Box>
+                              <div className="mt-2">
+                                {errors.facebook_link && (
+                                  <span
+                                    style={{ color: "red" }}
+                                    className="-mb-6"
+                                  >
+                                    {errors.facebook_link?.message}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="w-full">
+                              <Box sx={{ display: "flex" }}>
+                                <CustomTextField
+                                  id="input-with-sx"
+                                  label="Instagram Link"
+                                  variant="standard"
+                                  className="w-full"
+                                  {...register("instagram_link", {
+                                    required: "Instagram Link is required",
+                                  })}
+                                />
+                              </Box>
+                              <div className="mt-2">
+                                {errors.instagram_link && (
+                                  <span
+                                    style={{ color: "red" }}
+                                    className="-mb-6"
+                                  >
+                                    {errors.instagram_link?.message}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="container flex gap-2 w-full flex-col">
+                            <p className="flex items-center text-colorBlack text-lg">
+                              Hours
+                            </p>
+                            <div
+                              className="w-full border border-colorBlack p-3 rounded-lg flex items-center justify-between cursor-pointer text-colorBlack text-base font-semibold"
+                              onClick={() => {
+                                setHoursModalOpen(true);
+                              }}
+                            >
+                              <div>
+                                {hours.map((day, index) => (
+                                  <div
+                                    className="flex items-center gap-2"
+                                    key={index}
+                                  >
+                                    {day["key"]} :
+                                    <div className="flex items-center gap-5">
+                                      {day["value"]?.map((time, index) => (
+                                        <p key={index}>{time}</p>
+                                      ))}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                              <KeyboardArrowRightIcon />
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </form>
                 </div>
@@ -581,12 +765,15 @@ const ShopPage = () => {
                       id="shopLogo"
                       name="shopLogo"
                       hidden
-                      {...register("shopLogo")}
-                      onChange={(e) => {
-                        if (e.target.files && e.target.files.length > 0) {
-                          onShopLogoPreviewImage(e);
-                        }
-                      }}
+                      {...register("shopLogo", {
+                        required:
+                          shopLogo === "" ? "shopLogo is required" : false,
+                        onChange: (e) => {
+                          if (e.target.files && e.target.files.length > 0) {
+                            onShopLogoPreviewImage(e);
+                          }
+                        },
+                      })}
                     />
                     {shopLogo !== "" ? (
                       <div>
@@ -636,6 +823,13 @@ const ShopPage = () => {
                         </button>
                       </div>
                     )}
+                    <div className="mt-2">
+                      {errors.shopLogo && (
+                        <span style={{ color: "red" }} className="-mb-6">
+                          {errors.shopLogo?.message}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   <div>
@@ -648,13 +842,19 @@ const ShopPage = () => {
                       id="shopBackground"
                       name="shopBackground"
                       hidden
-                      {...register("shopBackground")}
-                      onChange={(e) => {
-                        if (e.target.files && e.target.files.length > 0) {
-                          onShopBackgroundPreviewImage(e);
-                        }
-                      }}
+                      {...register("shopBackground", {
+                        required:
+                          shopBackground === ""
+                            ? "shopBackground is required"
+                            : false,
+                        onChange: (e) => {
+                          if (e.target.files && e.target.files.length > 0) {
+                            onShopBackgroundPreviewImage(e);
+                          }
+                        },
+                      })}
                     />
+
                     {shopBackground !== "" ? (
                       <div>
                         <Image
@@ -667,7 +867,7 @@ const ShopPage = () => {
                           className="bg-gray-300 rounded-full flex justify-center items-center"
                           style={{
                             position: "relative",
-                            left: 130,
+                            left: 180,
                             bottom: 30,
                             height: 30,
                             width: 30,
@@ -700,6 +900,13 @@ const ShopPage = () => {
                         </button>
                       </div>
                     )}
+                    <div className="mt-2">
+                      {errors.shopBackground && (
+                        <span style={{ color: "red" }} className="-mb-6">
+                          {errors.shopBackground?.message}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -722,20 +929,23 @@ const ShopPage = () => {
                           multiple
                           accept="image/*"
                           {...register("shopImages", {
-                            // required: "Shop Image is required",
+                            required:
+                              shopImages.length === 0
+                                ? "Shop Image is required"
+                                : false,
                             onChange: (e) => {
                               createShopImagesChange(e);
                             },
                           })}
                         />
                       </Button>
-                      <div className="mt-2 ml-9">
-                        {errors.shopImages && (
-                          <span style={{ color: "red" }} className="-mb-6">
-                            {errors.shopImages?.message}
-                          </span>
-                        )}
-                      </div>
+                    </div>
+                    <div className="mt-2">
+                      {errors.shopImages && (
+                        <span style={{ color: "red" }} className="-mb-6">
+                          {errors.shopImages?.message}
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="flex  justify-center mt-10">
@@ -797,7 +1007,6 @@ const ShopPage = () => {
                           accept="video/*"
                           hidden
                           controls
-                          // {...register("picture")}
                           onChange={(e) => {
                             if (e.target.files && e.target.files.length > 0) {
                               onShopVideoPreview(e);
@@ -805,13 +1014,6 @@ const ShopPage = () => {
                           }}
                         />
                       </Button>
-                      {/* <div className="mt-2 ml-9">
-                        {errors.image && (
-                          <span style={{ color: "red" }} className="-mb-6">
-                            {errors.image?.message}
-                          </span>
-                        )}
-                      </div> */}
                     </div>
                   </div>
                   {shopVideo !== "" && (
@@ -956,11 +1158,11 @@ const ShopPage = () => {
                             <FormControlLabel
                               value="True"
                               label="Yes"
-                              control={<Radio {...register("sameAsOwner")} />}
+                              control={<Radio />}
                             />
                             <FormControlLabel
                               value="False"
-                              control={<Radio {...register("sameAsOwner")} />}
+                              control={<Radio />}
                               label="No"
                             />
                           </RadioGroup>
@@ -1086,27 +1288,98 @@ const ShopPage = () => {
                         </div>
                       </div>
 
-                      <div className="container flex items-center !mt-10">
-                        <Button
-                          variant="contained"
-                          endIcon={<AddIcon />}
-                          className="!bg-colorPrimary"
-                          onClick={() => setSubBranchModalOpen(true)}
-                        >
-                          Sub Branch
-                        </Button>
-                      </div>
+                      {!individual && (
+                        <div className="container flex items-center !mt-10">
+                          <Button
+                            variant="contained"
+                            endIcon={<AddIcon />}
+                            className="!bg-colorPrimary"
+                            onClick={() => setSubBranchModalOpen(true)}
+                            disabled={!isValid}
+                          >
+                            Sub Branch
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </form>
                 </div>
-                {/* {subBranchModalOpen && (
-                  <SubBranchModal
-                    subBranchModalOpen={subBranchModalOpen}
-                    setSubBranchModalOpen={setSubBranchModalOpen}
-                    register={register}
-                    errors={errors}
-                  />
-                )} */}
+                {subBranch.length > 0 && (
+                  <div className="mb-10">
+                    <h3 className="text-colorPrimary text-lg font-semibold leading-8 container my-5">
+                      Sub Branches
+                    </h3>
+
+                    <div className="container grid grid-cols-1 sm:grid-cols-2 gap-10">
+                      {subBranch.map((sub, index) => (
+                        <div
+                          className="bg-colorWhite p-5 rounded-xl flex flex-col gap-1"
+                          key={index}
+                        >
+                          <p className="text-lg text-colorBlack">
+                            <b className="mr-2 text-lg">Branch Address : </b>
+                            {sub.subManagerAddress}
+                          </p>
+                          <p className="text-lg text-colorBlack">
+                            <b className="mr-2 text-lg">Branch City : </b>
+                            {sub.subManagerCity}
+                          </p>
+                          <p className="text-lg text-colorBlack">
+                            <b className="mr-2 text-lg">Branch PinCode : </b>
+                            {sub.subManagerPinCode}
+                          </p>
+                          <p className="text-lg text-colorBlack">
+                            <b className="mr-2 text-lg">
+                              Branch Manager Name :
+                            </b>
+                            {sub.subManagerFirstName +
+                              " " +
+                              sub.subManagerLastName}
+                          </p>
+                          <p className="text-lg text-colorBlack">
+                            <b className="mr-2 text-lg">
+                              Branch Manager Email :
+                            </b>
+                            {sub.subManagerEmail}
+                          </p>
+                          <p className="text-lg text-colorBlack">
+                            <b className="mr-2 text-lg">
+                              Branch Manager Phone Number :
+                            </b>
+                            {sub.subManagerPhone}
+                          </p>
+
+                          <div className="container mt-5">
+                            <Divider />
+                          </div>
+                          <div className="container mt-5 flex items-center justify-end gap-5">
+                            <IconButton
+                              aria-label="delete"
+                              className="rounded-xl capitalize text-colorBlack p-2 bg-red-600 hover:bg-red-600"
+                              onClick={() => {
+                                setSubBranch(
+                                  subBranch.filter((itm) => itm.id !== sub.id)
+                                );
+                              }}
+                            >
+                              <DeleteIcon className="text-colorWhite" />
+                            </IconButton>
+                            <IconButton
+                              aria-label="delete"
+                              className="rounded-xl capitalize text-colorBlack p-2 bg-colorStone hover:bg-colorStone"
+                              onClick={() => {
+                                setSubBranchModalOpen(true);
+                                setSubBranchEdit(sub);
+                              }}
+                            >
+                              <EditIcon className="text-colorWhite" />
+                            </IconButton>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </>
             )}
 
@@ -1130,14 +1403,14 @@ const ShopPage = () => {
                   className="bg-colorPrimary hover:bg-colorPrimary mr-1 text-white px-9 py-3 rounded-xl font-semibold focus:outline-none focus:shadow-outline 
                   shadow-lg flex items-center justify-center"
                 >
-                  {/* {loading && (
-                          <CircularProgress
-                            size={20}
-                            color="primary"
-                            sx={{ color: "white", mr: 1 }}
-                          />
-                        )} */}
-                  Next
+                  {loading && (
+                    <CircularProgress
+                      size={20}
+                      color="primary"
+                      sx={{ color: "white", mr: 1 }}
+                    />
+                  )}
+                  {activeStep === 2 ? "Submit" : "Next"}
                 </button>
               </Box>
             </div>
@@ -1167,6 +1440,27 @@ const ShopPage = () => {
         selectedWeek={selectedWeek}
         selectedAllHours={selectedAllHours}
         setSelectedAllHours={setSelectedAllHours}
+      />
+
+      <SubBranchModal
+        subBranchModalOpen={subBranchModalOpen}
+        setSubBranchModalOpen={setSubBranchModalOpen}
+        subBranch={subBranch}
+        setSubBranch={setSubBranch}
+        register={register}
+        errors={errors}
+        setValue={setValue}
+        getValues={getValues}
+        subBranchEdit={subBranchEdit}
+        setSubBranchEdit={setSubBranchEdit}
+      />
+      <AuthModal
+        open={open}
+        handleClose={() => {
+          setOpen(false);
+        }}
+        authTypeModal={authTypeModal}
+        setAuthTypeModal={setAuthTypeModal}
       />
     </>
   );
@@ -1654,14 +1948,188 @@ const DaysTimeModal = ({
 const SubBranchModal = ({
   subBranchModalOpen,
   setSubBranchModalOpen,
+  subBranch,
+  setSubBranch,
   register,
+  setValue,
+  getValues,
   errors,
+  setSubBranchEdit,
+  subBranchEdit,
 }) => {
+  const [managerValue, setManagerValue] = useState("");
+
+  const [subManagerAddress, setSubManagerAddress] = useState("");
+  const [subManagerCity, setSubManagerCity] = useState("");
+  const [subManagerPinCode, setSubManagerPinCode] = useState("");
+
+  const [subManagerFirstName, setSubManagerFirstName] = useState("");
+  const [subManagerLastName, setSubManagerLastName] = useState("");
+  const [subManagerEmail, setSubManagerEmail] = useState("");
+  const [subManagerPhone, setSubManagerPhone] = useState("");
+
+  const [error, setError] = useState({
+    subManagerAddressError: "",
+    subManagerCityError: "",
+    subManagerPinCodeError: "",
+    subManagerFirstNameError: "",
+    subManagerLastNameError: "",
+    subManagerEmailError: "",
+    subManagerPhoneError: "",
+  });
+
+  useEffect(() => {
+    if (managerValue === "Same as owner") {
+      setSubManagerFirstName(getValues("first_name"));
+      setSubManagerLastName(getValues("last_name"));
+      setSubManagerEmail(getValues("user_email"));
+      setSubManagerPhone(getValues("user_contact"));
+      error.subManagerFirstNameError = "";
+      error.subManagerLastNameError = "";
+      error.subManagerEmailError = "";
+      error.subManagerPhoneError = "";
+    } else if (managerValue === "same as main branch manager") {
+      setSubManagerFirstName(getValues("manager_first_name"));
+      setSubManagerLastName(getValues("manager_last_name"));
+      setSubManagerEmail(getValues("manager_user_email"));
+      setSubManagerPhone(getValues("manager_user_contact"));
+      error.subManagerFirstNameError = "";
+      error.subManagerLastNameError = "";
+      error.subManagerEmailError = "";
+      error.subManagerPhoneError = "";
+    } else {
+      setSubManagerFirstName("");
+      setSubManagerLastName("");
+      setSubManagerEmail("");
+      setSubManagerPhone("");
+    }
+  }, [error, getValues, managerValue, setValue]);
+
+  useEffect(() => {
+    if (subBranchEdit !== undefined) {
+      setSubManagerAddress(subBranchEdit.subManagerAddress);
+      setSubManagerCity(subBranchEdit.subManagerCity);
+      setSubManagerPinCode(subBranchEdit.subManagerPinCode);
+      setSubManagerFirstName(subBranchEdit.subManagerFirstName);
+      setSubManagerLastName(subBranchEdit.subManagerLastName);
+      setSubManagerEmail(subBranchEdit.subManagerEmail);
+      setSubManagerPhone(subBranchEdit.subManagerPhone);
+    }
+  }, [subBranchEdit]);
+
+  const subBranchSubmit = () => {
+    let allError = {};
+    if (!subManagerAddress) {
+      allError.subManagerAddressError = "SubManagerAddress is require";
+    } else {
+      allError.subManagerAddressError = "";
+    }
+    if (!subManagerCity) {
+      allError.subManagerCityError = "SubManagerCity is require";
+    } else {
+      allError.subManagerCityError = "";
+    }
+
+    if (!subManagerPinCode) {
+      allError.subManagerPinCodeError = "SubManagerPinCode is require";
+    } else {
+      allError.subManagerPinCodeError = "";
+    }
+
+    if (!subManagerFirstName) {
+      allError.subManagerFirstNameError = "SubManagerFirstName is require";
+    } else {
+      allError.subManagerFirstNameError = "";
+    }
+    if (!subManagerLastName) {
+      allError.subManagerLastNameError = "SubManagerLastName is require";
+    } else {
+      allError.subManagerLastNameError = "";
+    }
+    if (!subManagerEmail) {
+      allError.subManagerEmailError = "SubManagerEmail is require";
+    } else if (
+      !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(subManagerEmail)
+    ) {
+      allError.subManagerEmailError = "Invalid SubManagerEmail address";
+    } else {
+      allError.subManagerEmailError = "";
+    }
+    if (!subManagerPhone) {
+      allError.subManagerPhoneError = "SubManagerPhone is require";
+    } else if (subManagerPhone.length != 10) {
+      allError.subManagerPhoneError =
+        "SubManagerPhone Number must be 10 numbers";
+    } else {
+      allError.subManagerPhoneError = "";
+    }
+
+    if (
+      !subManagerAddress ||
+      !subManagerCity ||
+      !subManagerPinCode ||
+      !subManagerFirstName ||
+      !subManagerLastName ||
+      !subManagerEmail ||
+      !subManagerPhone
+    ) {
+      setError(allError);
+    } else {
+      if (subBranchEdit === undefined) {
+        setSubBranch([
+          ...subBranch,
+          {
+            id: subBranch.length + 1,
+            subManagerAddress,
+            subManagerCity,
+            subManagerPinCode,
+            subManagerFirstName,
+            subManagerLastName,
+            subManagerEmail,
+            subManagerPhone,
+          },
+        ]);
+        handleSubBranchModalClose();
+      } else {
+        const editSelectedSubBranchIndex = subBranch.findIndex(
+          (sub) => sub.id === subBranchEdit.id
+        );
+
+        const editSelectedSubBranch = [...subBranch];
+
+        editSelectedSubBranch[editSelectedSubBranchIndex] = {
+          id: subBranchEdit.id,
+          subManagerAddress,
+          subManagerCity,
+          subManagerPinCode,
+          subManagerFirstName,
+          subManagerLastName,
+          subManagerEmail,
+          subManagerPhone,
+        };
+        setSubBranch(editSelectedSubBranch);
+        handleSubBranchModalClose();
+      }
+    }
+  };
+
+  const handleSubBranchModalClose = () => {
+    setSubBranchModalOpen(false);
+    setSubManagerAddress("");
+    setSubManagerCity("");
+    setSubManagerPinCode("");
+    setSubManagerFirstName();
+    setSubManagerLastName("");
+    setSubManagerEmail("");
+    setManagerValue("");
+    setSubManagerPhone();
+    setSubBranchEdit();
+  };
   return (
     <>
       <CustomAuthModal
         open={subBranchModalOpen}
-        onClose={() => setSubBranchModalOpen(false)}
+        onClose={handleSubBranchModalClose}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
         className="animate__animated animate__slideInDown"
@@ -1693,50 +2161,46 @@ const SubBranchModal = ({
                       Sub Branch
                     </p>
                     <div className="flex items-center justify-center container gap-20">
-                      <div className="w-full">
+                      <div className="w-full flex flex-col gap-2">
                         <Box sx={{ display: "flex" }}>
                           <CustomTextField
                             id="input-with-sx"
                             label="Address"
                             variant="standard"
                             className="w-full"
-                            {...register("sub_branch_address", {
-                              required: "Address is required",
-                            })}
+                            value={subManagerAddress}
+                            onChange={(e) => {
+                              setSubManagerAddress(e.target.value);
+                              error.subManagerAddressError = "";
+                            }}
                           />
                         </Box>
-                        <div className="mt-2">
-                          {errors.sub_branch_sub_branch_address && (
-                            <span style={{ color: "red" }} className="-mb-6">
-                              {errors.sub_branch_sub_branch_address?.message}
-                            </span>
-                          )}
-                        </div>
+                        <span style={{ color: "red" }}>
+                          {error.subManagerAddressError || ""}
+                        </span>
                       </div>
                     </div>
 
                     <div className="container flex gap-20 w-full justify-between items-center">
-                      <div className="w-full">
+                      <div className="w-full flex flex-col gap-2">
                         <Box sx={{ display: "flex" }}>
                           <CustomTextField
                             id="input-with-sx"
                             label="City"
                             variant="standard"
                             className="w-full"
-                            {...register("sub_branch_city", {
-                              required: "City is required",
-                            })}
+                            value={subManagerCity}
+                            onChange={(e) => {
+                              setSubManagerCity(e.target.value);
+                              error.subManagerCityError = "";
+                            }}
                           />
                         </Box>
-                        <div className="mt-2">
-                          {errors.sub_branch_city && (
-                            <span style={{ color: "red" }} className="-mb-6">
-                              {errors.sub_branch_city?.message}
-                            </span>
-                          )}
-                        </div>
+                        <span style={{ color: "red" }}>
+                          {error.subManagerCityError || ""}
+                        </span>
                       </div>
-                      <div className="w-full">
+                      <div className="w-full flex flex-col gap-2">
                         <Box sx={{ display: "flex" }}>
                           <CustomTextField
                             id="input-with-sx"
@@ -1744,100 +2208,92 @@ const SubBranchModal = ({
                             variant="standard"
                             className="w-full"
                             type="number"
-                            {...register("sub_branch_pin_code", {
-                              required: "PinCode is required",
-                            })}
+                            value={subManagerPinCode}
+                            onChange={(e) => {
+                              setSubManagerPinCode(e.target.value);
+                              error.subManagerPinCodeError = "";
+                            }}
                           />
                         </Box>
-                        <div className="mt-2">
-                          {errors.sub_branch_pin_code && (
-                            <span style={{ color: "red" }} className="-mb-6">
-                              {errors.sub_branch_pin_code?.message}
-                            </span>
-                          )}
-                        </div>
+                        <span style={{ color: "red" }}>
+                          {error.subManagerPinCodeError || ""}
+                        </span>
                       </div>
                     </div>
 
-                    {/* <div className="flex sm:justify-center">
-                      <div className="mb-4 mt-2 flex flex-col sm:flex-row sm:justify-between sm:items-center container">
-                        <span className="font-semibold text-lg text-[#11142D]">
-                          Manager : Save as owner
+                    <div className="flex justify-center items-center">
+                      <div className="flex justify-between items-center container gap-10">
+                        <span className="font-semibold text-lg text-[#11142D] mt-5">
+                          Manager:
                         </span>
 
-                        <RadioGroup
-                          row
-                          aria-labelledby="demo-form-control-label-placement"
-                          name="position"
-                          className="ml-12 sm:ml-0"
-                          value={sameAsOwner}
-                          onChange={(e) => {
-                            if (e.target.value === "True") {
-                              setSameAsOwner("True");
-                            } else {
-                              setSameAsOwner("False");
-                            }
-                          }}
+                        <CustomTextField
+                          label="Manager"
+                          variant="standard"
+                          select
+                          fullWidth
+                          value={managerValue}
+                          onChange={(e) => setManagerValue(e.target.value)}
                         >
-                          <FormControlLabel
-                            value="True"
-                            label="Yes"
-                            control={<Radio {...register("sameAsOwner")} />}
-                          />
-                          <FormControlLabel
-                            value="False"
-                            control={<Radio {...register("sameAsOwner")} />}
-                            label="No"
-                          />
-                        </RadioGroup>
+                          <MenuItem value="">None</MenuItem>
+                          {["Same as owner", "same as main branch manager"].map(
+                            (man) => (
+                              <MenuItem value={man} key={man}>
+                                {man}
+                              </MenuItem>
+                            )
+                          )}
+                        </CustomTextField>
                       </div>
-                    </div> */}
+                    </div>
 
                     <div className="container flex gap-20 w-full justify-between items-center">
                       <p className="mt-2 flex items-center text-colorBlack text-lg">
                         Name:
                       </p>
-                      <div className="w-full">
+                      <div className="w-full flex flex-col gap-2">
                         <Box sx={{ display: "flex" }}>
                           <CustomTextField
                             id="input-with-sx"
                             label="Manager First Name"
                             variant="standard"
                             className="w-full"
-                            // disabled={sameAsOwner === "True"}
-                            {...register("sub_branch_manager_first_name", {
-                              required: "Manager FirstName is required",
-                            })}
+                            disabled={
+                              managerValue === "Same as owner" ||
+                              managerValue === "same as main branch manager"
+                            }
+                            value={subManagerFirstName}
+                            onChange={(e) => {
+                              setSubManagerFirstName(e.target.value);
+                              error.subManagerFirstNameError = "";
+                            }}
                           />
                         </Box>
-                        <div className="mt-2">
-                          {errors.sub_branch_manager_first_name && (
-                            <span style={{ color: "red" }} className="-mb-6">
-                              {errors.sub_branch_manager_first_name?.message}
-                            </span>
-                          )}
-                        </div>
+                        <span style={{ color: "red" }}>
+                          {error.subManagerFirstNameError || ""}
+                        </span>
                       </div>
-                      <div className="w-full">
+                      <div className="w-full flex flex-col gap-2">
                         <Box sx={{ display: "flex" }}>
                           <CustomTextField
                             id="input-with-sx"
                             label="Manager Last Name"
                             variant="standard"
                             className="w-full"
-                            // disabled={sameAsOwner === "True"}
-                            {...register("sub_branch_manager_last_name", {
-                              required: "Manager LastName is required",
-                            })}
+                            disabled={
+                              managerValue === "Same as owner" ||
+                              managerValue === "same as main branch manager"
+                            }
+                            value={subManagerLastName}
+                            onChange={(e) => {
+                              setSubManagerLastName(e.target.value);
+                              error.subManagerLastNameError = "";
+                            }}
                           />
                         </Box>
-                        <div className="mt-2">
-                          {errors.sub_branch_manager_last_name && (
-                            <span style={{ color: "red" }} className="-mb-6">
-                              {errors.sub_branch_manager_last_name?.message}
-                            </span>
-                          )}
-                        </div>
+                        <span style={{ color: "red" }}>
+                          {error.subManagerLastNameError || ""}
+                        </span>
                       </div>
                     </div>
 
@@ -1845,32 +2301,28 @@ const SubBranchModal = ({
                       <p className="mt-2 flex items-center justify-between  text-colorBlack text-lg">
                         Email:
                       </p>
-                      <div className="w-full">
+                      <div className="w-full flex flex-col gap-2">
                         <Box sx={{ display: "flex" }}>
                           <CustomTextField
                             id="input-with-sx"
                             label="Manager Email Address"
                             variant="standard"
                             className="w-full"
-                            // disabled={sameAsOwner === "True"}
-                            {...register("sub_branch_manager_user_email", {
-                              required: "Manager Email is required",
-
-                              pattern: {
-                                value:
-                                  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-                                message: "Please enter a valid email",
-                              },
-                            })}
+                            type="email"
+                            disabled={
+                              managerValue === "Same as owner" ||
+                              managerValue === "same as main branch manager"
+                            }
+                            value={subManagerEmail}
+                            onChange={(e) => {
+                              setSubManagerEmail(e.target.value);
+                              error.subManagerEmailError = "";
+                            }}
                           />
                         </Box>
-                        <div className="mt-2">
-                          {errors.sub_branch_manager_user_email && (
-                            <span style={{ color: "red" }} className="-mb-6">
-                              {errors.sub_branch_manager_user_email?.message}
-                            </span>
-                          )}
-                        </div>
+                        <span style={{ color: "red" }}>
+                          {error.subManagerEmailError || ""}
+                        </span>
                       </div>
                     </div>
 
@@ -1878,37 +2330,33 @@ const SubBranchModal = ({
                       <p className="mt-2 flex items-center justify-between  text-colorBlack text-lg">
                         Phone:
                       </p>
-                      <div className="w-full">
+                      <div className="w-full flex flex-col gap-2">
                         <Box sx={{ display: "flex" }}>
                           <CustomTextField
                             id="input-with-sx"
                             label="Manager Phone Number"
                             variant="standard"
                             className="w-full"
-                            // disabled={sameAsOwner === "True"}
                             type="number"
-                            {...register("sub_branch_manager_user_contact", {
-                              required: "Manager Contact Number is required",
-                              minLength: {
-                                value: 10,
-                                message:
-                                  "Manager Contact Number must be 10 numbers",
-                              },
-                              maxLength: {
-                                value: 10,
-                                message:
-                                  "Manager Contact Number must be 10 numbers",
-                              },
-                            })}
+                            disabled={
+                              managerValue === "Same as owner" ||
+                              managerValue === "same as main branch manager"
+                            }
+                            value={subManagerPhone}
+                            onChange={(e) => {
+                              setSubManagerPhone(e.target.value);
+                              if (e.target.value.length != 10) {
+                                error.subManagerPhoneError =
+                                  "SubManagerPhone Number must be 10 numbers";
+                              } else {
+                                error.subManagerPhoneError = "";
+                              }
+                            }}
                           />
                         </Box>
-                        <div className="mt-2">
-                          {errors.sub_branch_manager_user_contact && (
-                            <span style={{ color: "red" }} className="-mb-6">
-                              {errors.sub_branch_manager_user_contact?.message}
-                            </span>
-                          )}
-                        </div>
+                        <span style={{ color: "red" }}>
+                          {error.subManagerPhoneError || ""}
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -1923,14 +2371,14 @@ const SubBranchModal = ({
               <Button
                 variant="outlined"
                 className="rounded-xl capitalize text-colorBlack py-2 px-5"
-                onClick={() => setSubBranchModalOpen(false)}
+                onClick={handleSubBranchModalClose}
               >
                 Cancel
               </Button>
               <Button
                 variant="contained"
                 className="rounded-xl capitalize text-colorWhite bg-colorPrimary py-2 px-5"
-                onClick={() => setSubBranchModalOpen(false)}
+                onClick={subBranchSubmit}
               >
                 Save
               </Button>
