@@ -1,8 +1,67 @@
 import React from "react";
 import withAuth from "../../../components/core/PrivateRouteForVendor";
+import VendorShopSubHeader from "../../../components/Layout/VendorShopSubHeader";
 
 const ShopDashboard = () => {
-  return <div>ShopDashboard</div>;
+  return (
+    <>
+      <VendorShopSubHeader />
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+      <p>bbiub</p>
+    </>
+  );
 };
 
 // export default withAuth(ShopDashboard);

@@ -199,12 +199,12 @@ const ShopPage = () => {
                   uploadShopVideo !== ""
                     ? VideoUploadFile(uploadShopVideo).then((videoResponse) => {
                         shopRegistration({
+                          userId: userProfile.id,
                           ownerInfo: {
-                            id: userProfile.id,
-                            first_name: data.first_name,
-                            last_name: data.last_name,
-                            user_email: data.user_email,
-                            user_contact: data.user_email,
+                            owner_firstName: data.first_name,
+                            owner_lastName: data.last_name,
+                            owner_email: data.user_email,
+                            owner_contact: data.user_contact,
                           },
                           shopInfo: {
                             shop_logo: logoResponse.data.data.singleUpload,
@@ -286,12 +286,12 @@ const ShopPage = () => {
                         );
                       })
                     : shopRegistration({
+                        userId: userProfile.id,
                         ownerInfo: {
-                          id: userProfile.id,
-                          first_name: data.first_name,
-                          last_name: data.last_name,
-                          user_email: data.user_email,
-                          user_contact: data.user_email,
+                          owner_firstName: data.first_name,
+                          owner_lastName: data.last_name,
+                          owner_email: data.user_email,
+                          owner_contact: data.user_contact,
                         },
                         shopInfo: {
                           shop_logo: logoResponse.data.data.singleUpload,

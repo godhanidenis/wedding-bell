@@ -15,6 +15,7 @@ export const getUserProfile = async () => {
           user_type
           flag
           userHaveAnyShop
+          userCreatedShopId
           shop_follower_list {
             shop_id
             user_id

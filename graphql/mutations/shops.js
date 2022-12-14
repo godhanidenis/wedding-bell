@@ -48,14 +48,16 @@ export const shopRegistration = async (payload) => {
   const results = await client.mutate({
     mutation: gql`
       mutation CreateShop(
-        $ownerInfo: updateUserInput
+        $ownerInfo: shopOwnerInput
         $shopInfo: createShopInput
         $branchInfo: [branchInput]
+        $userId: String
       ) {
         createShop(
           ownerInfo: $ownerInfo
           shopInfo: $shopInfo
           branchInfo: $branchInfo
+          user_id: $userId
         ) {
           branchInfo {
             branch_address
@@ -112,48 +114,12 @@ export const shopRegistration = async (payload) => {
             shop_id
           }
           ownerInfo {
-            first_name
-            flag
             id
-            last_name
-            product_like_list {
-              id
-              product_name
-              product_description
-              product_image {
-                front
-                back
-                side
-              }
-              product_video
-              product_color
-              categoryInfo {
-                id
-                category_name
-                category_type
-                flag
-              }
-              flag
-              productLikes
-            }
-            shop_follower_list {
-              shop_id
-              user_id
-            }
-            shop_review_list {
-              id
-              shop_id
-              user_id
-              user_name
-              user_type
-              stars
-              message
-              flag
-            }
-            user_contact
-            user_email
-            user_password
-            user_type
+            owner_contact
+            owner_email
+            owner_firstName
+            owner_lastName
+            flag
           }
           shopInfo {
             flag
@@ -196,6 +162,7 @@ export const shopRegistration = async (payload) => {
       ownerInfo: payload.ownerInfo,
       shopInfo: payload.shopInfo,
       branchInfo: payload.branchInfo,
+      userId: payload.userId,
     },
   });
   return results;
