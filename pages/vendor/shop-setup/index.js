@@ -163,23 +163,10 @@ const ShopPage = () => {
     return {
       branch_address: val.subManagerAddress,
       branch_pinCode: val.subManagerPinCode,
+      branch_city: val.city,
       manager_name: val.subManagerFirstName + " " + val.subManagerLastName,
       manager_contact: val.subManagerPhone,
-      branch_time: hours.map((day) => {
-        return {
-          week: day["key"],
-          open_time:
-            day["value"][0] === "Closed" || day["value"][0] === "Open 24 hours"
-              ? "-"
-              : day["value"][0].split(" - ")[0],
-          close_time:
-            day["value"][0] === "Closed" || day["value"][0] === "Open 24 hours"
-              ? "-"
-              : day["value"][0].split(" - ")[1],
-          is_close: day["value"][0] === "Closed" ? true : false,
-          is_24Hours_open: day["value"][0] === "Open 24 hours" ? true : false,
-        };
-      }),
+      manager_email: val.manager_user_email,
       branch_type: "sub",
     };
   };
@@ -225,44 +212,41 @@ const ShopPage = () => {
                               website: individual ? "" : data.personal_website,
                             },
                             shop_name: data.shop_name,
+                            shop_email: data.shop_email,
                             shop_type: individual ? "individual" : "shop",
+                            shop_time: hours.map((day) => {
+                              return {
+                                week: day["key"],
+                                open_time:
+                                  day["value"][0] === "Closed" ||
+                                  day["value"][0] === "Open 24 hours"
+                                    ? "-"
+                                    : day["value"][0].split(" - ")[0],
+                                close_time:
+                                  day["value"][0] === "Closed" ||
+                                  day["value"][0] === "Open 24 hours"
+                                    ? "-"
+                                    : day["value"][0].split(" - ")[1],
+                                is_close:
+                                  day["value"][0] === "Closed" ? true : false,
+                                is_24Hours_open:
+                                  day["value"][0] === "Open 24 hours"
+                                    ? true
+                                    : false,
+                              };
+                            }),
                           },
                           branchInfo: [
                             {
                               branch_address: data.address,
+                              branch_city: data.city,
                               branch_pinCode: data.pin_code,
                               manager_name:
                                 data.manager_first_name +
                                 " " +
                                 data.manager_last_name,
                               manager_contact: data.manager_user_contact,
-                              branch_time: hours.map((day) => {
-                                return {
-                                  week: day["key"],
-                                  open_time: individual
-                                    ? "-"
-                                    : day["value"][0] === "Closed" ||
-                                      day["value"][0] === "Open 24 hours"
-                                    ? "-"
-                                    : day["value"][0].split(" - ")[0],
-                                  close_time: individual
-                                    ? "-"
-                                    : day["value"][0] === "Closed" ||
-                                      day["value"][0] === "Open 24 hours"
-                                    ? "-"
-                                    : day["value"][0].split(" - ")[1],
-                                  is_close: individual
-                                    ? false
-                                    : day["value"][0] === "Closed"
-                                    ? true
-                                    : false,
-                                  is_24Hours_open: individual
-                                    ? true
-                                    : day["value"][0] === "Open 24 hours"
-                                    ? true
-                                    : false,
-                                };
-                              }),
+                              manager_email: data.manager_user_email,
                               branch_type: "main",
                             },
                             ...(subBranch.length > 0
@@ -310,44 +294,41 @@ const ShopPage = () => {
                             website: individual ? "" : data.personal_website,
                           },
                           shop_name: data.shop_name,
+                          shop_email: data.shop_email,
                           shop_type: individual ? "individual" : "shop",
+                          shop_time: hours.map((day) => {
+                            return {
+                              week: day["key"],
+                              open_time:
+                                day["value"][0] === "Closed" ||
+                                day["value"][0] === "Open 24 hours"
+                                  ? "-"
+                                  : day["value"][0].split(" - ")[0],
+                              close_time:
+                                day["value"][0] === "Closed" ||
+                                day["value"][0] === "Open 24 hours"
+                                  ? "-"
+                                  : day["value"][0].split(" - ")[1],
+                              is_close:
+                                day["value"][0] === "Closed" ? true : false,
+                              is_24Hours_open:
+                                day["value"][0] === "Open 24 hours"
+                                  ? true
+                                  : false,
+                            };
+                          }),
                         },
                         branchInfo: [
                           {
                             branch_address: data.address,
                             branch_pinCode: data.pin_code,
+                            branch_city: data.city,
                             manager_name:
                               data.manager_first_name +
                               " " +
                               data.manager_last_name,
                             manager_contact: data.manager_user_contact,
-                            branch_time: hours.map((day) => {
-                              return {
-                                week: day["key"],
-                                open_time: individual
-                                  ? "-"
-                                  : day["value"][0] === "Closed" ||
-                                    day["value"][0] === "Open 24 hours"
-                                  ? "-"
-                                  : day["value"][0].split(" - ")[0],
-                                close_time: individual
-                                  ? "-"
-                                  : day["value"][0] === "Closed" ||
-                                    day["value"][0] === "Open 24 hours"
-                                  ? "-"
-                                  : day["value"][0].split(" - ")[1],
-                                is_close: individual
-                                  ? false
-                                  : day["value"][0] === "Closed"
-                                  ? true
-                                  : false,
-                                is_24Hours_open: individual
-                                  ? true
-                                  : day["value"][0] === "Open 24 hours"
-                                  ? true
-                                  : false,
-                              };
-                            }),
+                            manager_email: data.manager_user_email,
                             branch_type: "main",
                           },
                           ...(subBranch.length > 0
@@ -1447,8 +1428,6 @@ const ShopPage = () => {
         setSubBranchModalOpen={setSubBranchModalOpen}
         subBranch={subBranch}
         setSubBranch={setSubBranch}
-        register={register}
-        errors={errors}
         setValue={setValue}
         getValues={getValues}
         subBranchEdit={subBranchEdit}
@@ -1950,10 +1929,8 @@ const SubBranchModal = ({
   setSubBranchModalOpen,
   subBranch,
   setSubBranch,
-  register,
   setValue,
   getValues,
-  errors,
   setSubBranchEdit,
   subBranchEdit,
 }) => {
@@ -2122,8 +2099,19 @@ const SubBranchModal = ({
     setSubManagerLastName("");
     setSubManagerEmail("");
     setManagerValue("");
-    setSubManagerPhone();
+    setSubManagerPhone("");
     setSubBranchEdit();
+    error.subManagerFirstNameError = "";
+    error.subManagerLastNameError = "";
+    error.subManagerEmailError = "";
+    error.subManagerPhoneError = "";
+    error.subManagerFirstNameError = "";
+    error.subManagerLastNameError = "";
+    error.subManagerEmailError = "";
+    error.subManagerPhoneError = "";
+    error.subManagerAddressError = "";
+    error.subManagerCityError = "";
+    error.subManagerPinCodeError = "";
   };
   return (
     <>
@@ -2139,14 +2127,14 @@ const SubBranchModal = ({
             <div className="flex items-center">
               <ArrowBackIcon
                 className="text-black cursor-pointer"
-                onClick={() => setSubBranchModalOpen(false)}
+                onClick={handleSubBranchModalClose}
               />
               <p className="flex items-center text-colorBlack text-xl ml-5 font-semibold">
-                Add Sub Branch
+                {subBranchEdit?.id ? "Update" : "Add"} Sub Branch
               </p>
               <CloseIcon
                 className="text-black ml-auto cursor-pointer"
-                onClick={() => setSubBranchModalOpen(false)}
+                onClick={handleSubBranchModalClose}
               />
             </div>
 
@@ -2380,7 +2368,7 @@ const SubBranchModal = ({
                 className="rounded-xl capitalize text-colorWhite bg-colorPrimary py-2 px-5"
                 onClick={subBranchSubmit}
               >
-                Save
+                {subBranchEdit?.id ? "Update" : "Save"}
               </Button>
             </div>
           </div>

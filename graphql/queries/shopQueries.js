@@ -17,7 +17,16 @@ export const getShops = async (payload) => {
           data {
             id
             user_id
+            owner_id
             shop_name
+            shop_time {
+              close_time
+              is_24Hours_open
+              is_close
+              open_time
+              week
+            }
+            shop_email
             shop_logo
             shop_cover_image
             shop_images {
@@ -51,16 +60,18 @@ export const getShops = async (payload) => {
               branch_pinCode
               manager_name
               manager_contact
-              branch_time {
-                week
-                open_time
-                close_time
-                is_close
-              }
+              manager_email
               branch_type
               flag
               shop_info {
                 shop_name
+                shop_time {
+                  close_time
+                  is_24Hours_open
+                  is_close
+                  open_time
+                  week
+                }
               }
             }
           }
@@ -86,6 +97,15 @@ export const getShopDetails = async (payload) => {
           id
           user_id
           shop_name
+          shop_time {
+            close_time
+            is_24Hours_open
+            is_close
+            open_time
+            week
+          }
+          shop_email
+          owner_id
           shop_logo
           shop_cover_image
           shop_images {
@@ -120,14 +140,10 @@ export const getShopDetails = async (payload) => {
 
             branch_address
             branch_pinCode
+            branch_city
             manager_name
             manager_contact
-            branch_time {
-              week
-              open_time
-              close_time
-              is_close
-            }
+            manager_email
             branch_type
             flag
             product_info {
@@ -157,6 +173,13 @@ export const getShopDetails = async (payload) => {
                   id
                   user_id
                   shop_name
+                  shop_time {
+                    close_time
+                    is_24Hours_open
+                    is_close
+                    open_time
+                    week
+                  }
                   shop_logo
                   shop_cover_image
                   shop_images {
@@ -190,12 +213,7 @@ export const getShopDetails = async (payload) => {
                 branch_pinCode
                 manager_name
                 manager_contact
-                branch_time {
-                  week
-                  open_time
-                  close_time
-                  is_close
-                }
+                manager_email
                 branch_type
                 flag
               }
@@ -253,4 +271,42 @@ export const getShopFollowers = async (payload) => {
   });
 
   return results;
+};
+
+export const getShopOwnerList = async () => {
+  const results = await client.query({
+    query: gql`
+      query ShopOwnerList {
+        shopOwnerList {
+          id
+          owner_contact
+          owner_email
+          owner_firstName
+          owner_lastName
+        }
+      }
+    `,
+  });
+
+  return results;
+};
+
+export const getShopOwnerDetail = async (payload) => {
+  const result = await client.query({
+    query: gql`
+      query ShopOwner($shopOwnerId: String) {
+        shopOwner(id: $shopOwnerId) {
+          id
+          owner_firstName
+          owner_lastName
+          owner_email
+          owner_contact
+        }
+      }
+    `,
+    variables: {
+      shopOwnerId: payload.id,
+    },
+  });
+  return result;
 };

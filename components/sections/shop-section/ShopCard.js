@@ -84,7 +84,7 @@ const ShopCard = ({ shop }) => {
               Followers
             </p>
             <span className="font-medium text-base lg:text-lg flex items-center mt-2 justify-center text-colorBlack">
-              {shop.shopFollowerCount}
+              {shop?.shopFollowerCount}
             </span>
           </div>
           <Divider orientation="vertical" flexItem />

@@ -52,6 +52,13 @@ export const getUserProfile = async () => {
                 id
                 user_id
                 shop_name
+                shop_time {
+                  close_time
+                  is_24Hours_open
+                  is_close
+                  open_time
+                  week
+                }
                 shop_logo
                 shop_cover_image
                 shop_images {
@@ -83,12 +90,7 @@ export const getUserProfile = async () => {
               branch_pinCode
               manager_name
               manager_contact
-              branch_time {
-                week
-                open_time
-                close_time
-                is_close
-              }
+              manager_email
               branch_type
               flag
             }
