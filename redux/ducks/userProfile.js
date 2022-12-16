@@ -10,6 +10,8 @@ export const PRODUCT_LIKE_TOGGLE = "PRODUCT_LIKE_TOGGLE";
 
 export const LOGIN_USER_ID = "LOGIN_USER_ID";
 
+export const REGISTER_SHOP_ID = "REGISTER_SHOP_ID";
+
 export const loginUserId = (userId) => ({
   type: LOGIN_USER_ID,
   payload: userId,
@@ -41,6 +43,11 @@ export const shopFollowToggle = (shopInfo) => ({
 export const productLikeToggle = (productInfo) => ({
   type: PRODUCT_LIKE_TOGGLE,
   payload: productInfo,
+});
+
+export const setShopRegisterId = (id) => ({
+  type: REGISTER_SHOP_ID,
+  payload: id,
 });
 
 const initialState = {
@@ -75,6 +82,10 @@ const userProfileReducer = (state = initialState, action) => {
       };
 
     case SHOP_FOLLOW_TOGGLE:
+      console.log(
+        "action.payload.shopInfo.value",
+        action.payload.shopInfo.value
+      );
       return {
         ...state,
 
@@ -108,6 +119,16 @@ const userProfileReducer = (state = initialState, action) => {
               : state.userProfile.product_like_list.filter(
                   (product) => product.id !== action.payload.productInfo.value
                 ),
+        },
+      };
+
+    case REGISTER_SHOP_ID:
+      console.log("action.payload action.payload", action.payload);
+      return {
+        ...state,
+        userProfile: {
+          ...state.userProfile,
+          ["userCreatedShopId"]: action.payload,
         },
       };
 

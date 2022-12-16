@@ -118,10 +118,12 @@ const ProductCard = ({ product }) => {
           </button>
 
           <div className="product-overlay">
-            <Link href={`/product/${product.id}`} passHref>
-              <button className="text-colorWhite text-base px-4 py-2 w-full md:w-1/2 lg:w-full xl:w-1/2 bg-colorPrimary rounded-md detailButton">
-                See Details
-              </button>
+            <Link href={`/product/${product.id}`}>
+              <a target="_blank">
+                <button className="text-colorWhite text-base px-4 py-2 w-full md:w-1/2 lg:w-full xl:w-1/2 bg-colorPrimary rounded-md detailButton">
+                  See Details
+                </button>
+              </a>
             </Link>
           </div>
         </div>
@@ -139,9 +141,11 @@ const ProductCard = ({ product }) => {
           </div>
           <div className="flex flex-col justify-center">
             <Link href={`/shop/${shopId}`}>
-              <p className="text-[#000000] text-base font-semibold cursor-pointer hover:text-colorPrimary">
-                {product.branchInfo?.shop_info?.shop_name}
-              </p>
+              <a target="_blank">
+                <p className="text-[#000000] text-base font-semibold cursor-pointer hover:text-colorPrimary">
+                  {product.branchInfo?.shop_info?.shop_name}
+                </p>
+              </a>
             </Link>
             <p className="text-[#888888] text-sm font-normal">25 days ago</p>
           </div>

@@ -57,6 +57,13 @@ export const getProducts = async (payload) => {
                 shopFollowerCount
                 shopReviewCount
                 shop_name
+                shop_time {
+                  close_time
+                  is_24Hours_open
+                  is_close
+                  open_time
+                  week
+                }
                 shop_rating
                 shop_review {
                   id
@@ -73,12 +80,7 @@ export const getProducts = async (payload) => {
               branch_pinCode
               manager_name
               manager_contact
-              branch_time {
-                week
-                open_time
-                close_time
-                is_close
-              }
+              manager_email
               branch_type
               flag
             }
@@ -134,6 +136,13 @@ export const getProductDetails = async (payload) => {
                 id
                 user_id
                 shop_name
+                shop_time {
+                  close_time
+                  is_24Hours_open
+                  is_close
+                  open_time
+                  week
+                }
                 shop_logo
                 shop_cover_image
                 shop_images {
@@ -165,12 +174,7 @@ export const getProductDetails = async (payload) => {
               branch_pinCode
               manager_name
               manager_contact
-              branch_time {
-                week
-                open_time
-                close_time
-                is_close
-              }
+              manager_email
               branch_type
               flag
             }
@@ -201,6 +205,13 @@ export const getProductDetails = async (payload) => {
                 id
                 user_id
                 shop_name
+                shop_time {
+                  close_time
+                  is_24Hours_open
+                  is_close
+                  open_time
+                  week
+                }
                 shop_logo
                 shop_cover_image
                 shop_images {
@@ -232,12 +243,7 @@ export const getProductDetails = async (payload) => {
               branch_pinCode
               manager_name
               manager_contact
-              branch_time {
-                week
-                open_time
-                close_time
-                is_close
-              }
+              manager_email
               branch_type
               flag
             }

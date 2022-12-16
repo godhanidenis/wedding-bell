@@ -38,10 +38,12 @@ const ShopCard = ({ shop }) => {
           </div>
 
           <div className="product-overlay">
-            <Link href={`/shop/${shop.id}`} passHref>
-              <button className="text-colorWhite text-base px-4 py-2 w-full md:w-1/2 lg:w-full xl:w-1/2 bg-colorPrimary rounded-md detailButton">
-                Visit Shop
-              </button>
+            <Link href={`/shop/${shop.id}`}>
+              <a target="_blank">
+                <button className="text-colorWhite text-base px-4 py-2 w-full md:w-1/2 lg:w-full xl:w-1/2 bg-colorPrimary rounded-md detailButton">
+                  Visit Shop
+                </button>
+              </a>
             </Link>
           </div>
         </div>
@@ -58,9 +60,13 @@ const ShopCard = ({ shop }) => {
             />
           </div>
           <div className="flex flex-col justify-center">
-            <p className="text-[#000000] text-base font-semibold cursor-pointer hover:text-colorPrimary">
-              {shop.shop_name}
-            </p>
+            <Link href={`/shop/${shop.id}`}>
+              <a target="_blank">
+                <p className="text-[#000000] text-base font-semibold cursor-pointer hover:text-colorPrimary">
+                  {shop.shop_name}
+                </p>
+              </a>
+            </Link>
             <p className="text-[#888888] text-sm font-normal">
               <LocationOnIcon fontSize="small" className="mr-1" />
               {shop.branch_info.map(
@@ -78,7 +84,7 @@ const ShopCard = ({ shop }) => {
               Followers
             </p>
             <span className="font-medium text-base lg:text-lg flex items-center mt-2 justify-center text-colorBlack">
-              {shop.shopFollowerCount}
+              {shop?.shopFollowerCount}
             </span>
           </div>
           <Divider orientation="vertical" flexItem />

@@ -19,10 +19,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import { useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
 import { signIn } from "../../../graphql/mutations/authMutations";
-import {
-  loadUserProfileStart,
-  loginUserId,
-} from "../../../redux/ducks/userProfile";
+import { loginUserId } from "../../../redux/ducks/userProfile";
 import { useDispatch } from "react-redux";
 import store from "../../../redux/store";
 
