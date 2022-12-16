@@ -33,13 +33,14 @@ import { SingleImageUploadFile } from "../../../services/SingleImageUploadFile";
 import { MultipleImageUploadFile } from "../../../services/MultipleImageUploadFile";
 import { VideoUploadFile } from "../../../services/VideoUploadFile";
 import { shopRegistration } from "../../../graphql/mutations/shops";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import AuthModal from "../../../components/core/AuthModal";
 import { AuthTypeModal } from "../../../components/core/Enum";
 import CircularProgress from "@mui/material/CircularProgress";
 import Router from "next/router";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { setShopRegisterId } from "../../../redux/ducks/userProfile";
 
 const shopRegistrationSteps = ["Details", "Photos", "Branches"];
 const style = {
@@ -90,6 +91,7 @@ const ShopPage = () => {
 
   const [shopVideo, setShopVideo] = useState("");
   const [uploadShopVideo, setUploadShopVideo] = useState("");
+  console.log("uploadShopImages::::", uploadShopVideo);
 
   const [individual, setIndividual] = useState(false);
 
@@ -103,7 +105,7 @@ const ShopPage = () => {
   const [subBranch, setSubBranch] = useState([]);
 
   const [subBranchEdit, setSubBranchEdit] = useState();
-
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -256,6 +258,9 @@ const ShopPage = () => {
                         }).then(
                           (res) => {
                             console.log("res:::", res);
+                            dispatch(
+                              setShopRegisterId(res.data.createShop.shopInfo.id)
+                            );
                             toast.success(res.data.createShop.message, {
                               theme: "colored",
                             });
@@ -338,6 +343,9 @@ const ShopPage = () => {
                       }).then(
                         (res) => {
                           console.log("res:::", res);
+                          dispatch(
+                            setShopRegisterId(res.data.createShop.shopInfo.id)
+                          );
                           toast.success(res.data.createShop.message, {
                             theme: "colored",
                           });
@@ -389,7 +397,8 @@ const ShopPage = () => {
 
   const createShopImagesChange = (e) => {
     const files = Array.from(e.target.files);
-
+    setShopImages([]);
+    setUploadShopImages([]);
     files.forEach((file) => {
       setUploadShopImages((old) => [...old, file]);
       const reader = new FileReader();
@@ -940,26 +949,6 @@ const ShopPage = () => {
                               height={200}
                               width={250}
                             />
-                            <div
-                              className="bg-gray-300 rounded-full flex justify-center items-center cursor-pointer"
-                              style={{
-                                position: "relative",
-                                right: 0,
-                                bottom: 25,
-                                height: 30,
-                                width: 30,
-                                color: "#5cb85c",
-                              }}
-                            >
-                              <CancelIcon
-                                style={{ color: "black" }}
-                                onClick={() => {
-                                  setShopImages(
-                                    shopImages.filter((itm) => itm !== image)
-                                  );
-                                }}
-                              />
-                            </div>
                           </div>
                         ))}
                       </div>
@@ -1012,8 +1001,27 @@ const ShopPage = () => {
                               className="bg-gray-300 rounded-full flex justify-center items-center cursor-pointer"
                               style={{
                                 position: "relative",
+                                right: 10,
+                                bottom: 20,
+                                height: 30,
+                                width: 30,
+                                color: "#5cb85c",
+                              }}
+                            >
+                              <CancelIcon
+                                style={{ color: "black" }}
+                                onClick={() => {
+                                  setShopVideo("");
+                                  setUploadShopVideo("");
+                                }}
+                              />
+                            </div>
+                            <div
+                              className="bg-gray-300 rounded-full flex justify-center items-center cursor-pointer"
+                              style={{
+                                position: "relative",
                                 left: 335,
-                                bottom: 15,
+                                bottom: 50,
                                 height: 30,
                                 width: 30,
                                 color: "#5cb85c",

@@ -60,6 +60,9 @@ export const shopRegistration = async (payload) => {
           user_id: $userId
         ) {
           message
+          shopInfo {
+            id
+          }
         }
       }
     `,
@@ -96,6 +99,7 @@ export const shopUpdate = async (payload) => {
       ownerInfo: payload.ownerInfo,
       shopInfo: payload.shopInfo,
       branchInfo: payload.branchInfo,
+      shopLayout: payload.shopLayout,
     },
   });
   return results;

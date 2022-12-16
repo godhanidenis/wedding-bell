@@ -41,6 +41,12 @@ import {
 } from "../../../graphql/queries/branchListsQueries";
 import { deleteBranch, updateBranch } from "../../../graphql/mutations/branch";
 import { createBranch } from "../../../graphql/mutations/branch";
+import { deleteMedia } from "../../../graphql/mutations/deleteMedia";
+import Image from "next/image";
+import { SingleImageUploadFile } from "../../../services/SingleImageUploadFile";
+import { MultipleImageUploadFile } from "../../../services/MultipleImageUploadFile";
+import CancelIcon from "@mui/icons-material/Cancel";
+import { VideoUploadFile } from "../../../services/VideoUploadFile";
 
 const style = {
   position: "absolute",
@@ -70,6 +76,7 @@ const ShopEdit = () => {
     { key: "Saturday", value: ["09:00 AM - 08:00 PM"] },
   ]);
 
+  const { isAuthenticate } = useSelector((state) => state.userProfile);
   const {
     register: ownerInfoRegister,
     handleSubmit: ownerInfoHandleSubmit,
@@ -93,6 +100,12 @@ const ShopEdit = () => {
     getValues: mainBranchInfoGetValue,
   } = useForm();
 
+  const {
+    register: shopLayoutRegister,
+    handleSubmit: shopLayoutHandleSubmit,
+    formState: { errors: shopLayoutErrors },
+  } = useForm();
+
   const router = useRouter();
   const { id } = router.query;
   const [open, setOpen] = useState(false);
@@ -102,6 +115,7 @@ const ShopEdit = () => {
   const [ownerLoading, setOwnerLoading] = useState(false);
   const [shopLoading, setShopLoading] = useState(false);
   const [mainBranchLoading, setMainBranchLoading] = useState(false);
+  const [shopLayoutLoading, setShopLayoutLoading] = useState(false);
 
   const [hoursModalOpen, setHoursModalOpen] = useState(false);
   const [daysTimeModalOpen, setDaysTimeModalOpen] = useState(false);
@@ -118,11 +132,76 @@ const ShopEdit = () => {
 
   const [subBranchModalOpen, setSubBranchModalOpen] = useState(false);
 
-  const { userProfile, isAuthenticate } = useSelector(
-    (state) => state.userProfile
-  );
+  const [shopLogo, setShopLogo] = useState("");
+  const [uploadShopLogo, setUploadShopLogo] = useState("");
 
-  console.log("mainBranch", mainBranch);
+  const [shopBackground, setShopBackground] = useState("");
+  const [uploadShopBackground, setUploadShopBackground] = useState("");
+
+  const [shopImages, setShopImages] = useState([]);
+  const [uploadShopImages, setUploadShopImages] = useState("");
+
+  const [shopVideo, setShopVideo] = useState("");
+  const [uploadShopVideo, setUploadShopVideo] = useState("");
+
+  const [shopLayoutAllMediaImages, setShopLayoutAllMediaImages] = useState([]);
+  const [shopLayoutAllMediaVideos, setShopLayoutAllMediaVideos] = useState();
+
+  async function srcToFile(src, fileName, mimeType) {
+    const res = await fetch(src);
+    const buf = await res.arrayBuffer();
+    return new File([buf], fileName, { type: mimeType });
+  }
+
+  const onShopLogoPreviewImage = (e) => {
+    console.log("e.target.files[0]", e.target.files[0]);
+    const reader = new FileReader();
+
+    if (e.target.files && e.target.files.length > 0) {
+      setUploadShopLogo(e.target.files[0]);
+      reader.readAsDataURL(e.target.files[0]);
+      reader.addEventListener("load", (e) => {
+        setShopLogo(reader.result);
+      });
+    }
+  };
+
+  const onShopBackgroundPreviewImage = (e) => {
+    const reader = new FileReader();
+
+    if (e.target.files && e.target.files.length > 0) {
+      setUploadShopBackground(e.target.files[0]);
+      reader.readAsDataURL(e.target.files[0]);
+      reader.addEventListener("load", (e) => {
+        setShopBackground(reader.result);
+      });
+    }
+  };
+
+  const updateShopImagesChange = (e) => {
+    const files = Array.from(e.target.files);
+    setShopImages([]);
+    setUploadShopImages([]);
+    files.forEach((file) => {
+      setUploadShopImages((old) => [...old, file]);
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        setShopImages((old) => [...old, reader.result]);
+      };
+    });
+  };
+
+  const onShopVideoPreview = (e) => {
+    const reader = new FileReader();
+    if (e.target.files && e.target.files.length > 0) {
+      setUploadShopVideo(e.target.files[0]);
+      reader.readAsDataURL(e.target.files[0]);
+      reader.addEventListener("load", (e) => {
+        setShopVideo(reader.result);
+      });
+    }
+  };
 
   const getAllSubBranchList = () => {
     getBranchLists().then((res) => {
@@ -166,6 +245,7 @@ const ShopEdit = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
+
   useEffect(() => {
     if (id) {
       getShopDetails({ id }).then((res) => {
@@ -188,6 +268,54 @@ const ShopEdit = () => {
         });
 
         console.log("res::::", res.data.shop);
+
+        srcToFile(res.data.shop.shop_logo, "profile.png", "image/png").then(
+          function (file) {
+            setUploadShopLogo(file);
+          }
+        );
+        setShopLogo(res.data.shop.shop_logo);
+
+        srcToFile(
+          res.data.shop.shop_cover_image,
+          "profile.png",
+          "image/png"
+        ).then(function (file) {
+          setUploadShopBackground(file);
+        });
+        setShopBackground(res.data.shop.shop_cover_image);
+
+        res.data.shop.shop_images?.map((img) =>
+          srcToFile(img.links, "profile.png", "image/png").then(function (
+            file
+          ) {
+            setUploadShopImages((old) => [...old, file]);
+          })
+        );
+        res.data.shop.shop_images?.map((img) =>
+          setShopImages((old) => [...old, img.links])
+        );
+
+        res.data.shop.shop_video &&
+          srcToFile(res.data.shop.shop_video, "profile.png", "image/png").then(
+            function (file) {
+              setUploadShopVideo(file);
+            }
+          );
+
+        res.data.shop.shop_video && setShopVideo(res.data.shop.shop_video);
+
+        setShopLayoutAllMediaImages((old) => [
+          ...old,
+          res.data.shop.shop_logo,
+          res.data.shop.shop_cover_image,
+          ...(res.data.shop.shop_images.length > 0
+            ? res.data.shop.shop_images.map((itm) => itm.links)
+            : []),
+        ]);
+
+        res.data.shop.shop_video &&
+          setShopLayoutAllMediaVideos(res.data.shop.shop_video);
 
         res.data.shop.shop_time.map((time) => {
           hours.map((itm) => {
@@ -260,6 +388,7 @@ const ShopEdit = () => {
   }, [hours, id, mainBranchInfoSetValue, ownerInfoSetValue, shopInfoSetValue]);
 
   const ownerInfoOnSubmit = (data) => {
+    console.log("data", data);
     if (isAuthenticate) {
       setOwnerLoading(true);
       shopUpdate({
@@ -286,12 +415,12 @@ const ShopEdit = () => {
     } else {
       setOpen(true), setAuthTypeModal(AuthTypeModal.Signin);
     }
-    console.log("data", data);
   };
   const ownerInfoOError = (errors) =>
     console.log("Errors Occurred !! :", errors);
 
   const shopInfoOnSubmit = (data) => {
+    console.log("data", data);
     if (isAuthenticate) {
       setShopLoading(true);
       shopUpdate({
@@ -350,12 +479,12 @@ const ShopEdit = () => {
     } else {
       setOpen(true), setAuthTypeModal(AuthTypeModal.Signin);
     }
-    console.log("data", data);
   };
   const shopInfoOError = (errors) =>
     console.log("Errors Occurred !! :", errors);
 
   const mainBranchInfoOnSubmit = (data) => {
+    console.log("data", data);
     if (isAuthenticate) {
       setMainBranchLoading(true);
       shopUpdate({
@@ -388,9 +517,97 @@ const ShopEdit = () => {
     } else {
       setOpen(true), setAuthTypeModal(AuthTypeModal.Signin);
     }
-    console.log("data", data);
   };
   const mainBranchInfoOError = (errors) =>
+    console.log("Errors Occurred !! :", errors);
+
+  const shopLayoutOnSubmit = (data) => {
+    console.log("data,,", data);
+
+    if (isAuthenticate) {
+      setShopLayoutLoading(true);
+      shopLayoutAllMediaImages.map((img) =>
+        deleteMedia({
+          file: img,
+          fileType: "image",
+        }).then((res) => setShopLayoutAllMediaImages([]))
+      );
+
+      shopLayoutAllMediaVideos !== undefined &&
+        deleteMedia({
+          file: shopLayoutAllMediaVideos,
+          fileType: "video",
+        }).then((res) => setShopLayoutAllMediaVideos());
+
+      SingleImageUploadFile(uploadShopLogo).then((logoResponse) => {
+        SingleImageUploadFile(uploadShopBackground).then(
+          (backgroundResponse) => {
+            MultipleImageUploadFile(uploadShopImages).then((imagesResponse) => {
+              uploadShopVideo !== ""
+                ? VideoUploadFile(uploadShopVideo).then((videoResponse) => {
+                    shopUpdate({
+                      shopLayout: {
+                        id,
+                        shop_logo: logoResponse.data.data.singleUpload,
+                        shop_cover_image:
+                          backgroundResponse.data.data.singleUpload,
+                        shop_images:
+                          imagesResponse.data.data.multipleUpload?.map(
+                            (itm) => {
+                              return { links: itm };
+                            }
+                          ),
+                        shop_video: videoResponse.data.data.singleUpload,
+                      },
+                    }).then(
+                      (res) => {
+                        console.log("owner res:::", res);
+                        toast.success(res.data.updateShop.message, {
+                          theme: "colored",
+                        });
+                        setShopLayoutLoading(false);
+                      },
+                      (error) => {
+                        setShopLayoutLoading(false);
+                        toast.error(error.message, { theme: "colored" });
+                      }
+                    );
+                  })
+                : shopUpdate({
+                    shopLayout: {
+                      id,
+                      shop_logo: logoResponse.data.data.singleUpload,
+                      shop_cover_image:
+                        backgroundResponse.data.data.singleUpload,
+                      shop_images: imagesResponse.data.data.multipleUpload?.map(
+                        (itm) => {
+                          return { links: itm };
+                        }
+                      ),
+                      shop_video: null,
+                    },
+                  }).then(
+                    (res) => {
+                      console.log("owner res:::", res);
+                      toast.success(res.data.updateShop.message, {
+                        theme: "colored",
+                      });
+                      setShopLayoutLoading(false);
+                    },
+                    (error) => {
+                      setShopLayoutLoading(false);
+                      toast.error(error.message, { theme: "colored" });
+                    }
+                  );
+            });
+          }
+        );
+      });
+    } else {
+      setOpen(true), setAuthTypeModal(AuthTypeModal.Signin);
+    }
+  };
+  const shopLayoutOnError = (errors) =>
     console.log("Errors Occurred !! :", errors);
 
   return (
@@ -1092,6 +1309,332 @@ const ShopEdit = () => {
               </div>
             </div>
           )}
+
+          <div className="container bg-colorWhite rounded-lg my-5 p-5 space-y-5">
+            <div className="flex flex-col space-y-3">
+              <h3 className="text-colorPrimary text-lg font-semibold leading-8">
+                Shop Layout
+              </h3>
+              <div className="flex gap-20 items-center container mt-10">
+                <div>
+                  <label className="flex justify-center items-center font-bold mb-3">
+                    Logo
+                  </label>
+                  <input
+                    type="file"
+                    id="shopLogo"
+                    name="shopLogo"
+                    hidden
+                    {...shopLayoutRegister("shopLogo", {
+                      required:
+                        shopLogo === "" ? "shopLogo is required" : false,
+                      onChange: (e) => {
+                        if (e.target.files && e.target.files.length > 0) {
+                          onShopLogoPreviewImage(e);
+                        }
+                      },
+                    })}
+                  />
+                  {shopLogo !== "" ? (
+                    <div>
+                      <Image
+                        src={shopLogo}
+                        height="150px"
+                        alt="logoimg"
+                        width="150px"
+                        style={{ borderRadius: 100 }}
+                      />
+                      <div
+                        className="bg-gray-300 rounded-full flex justify-center items-center"
+                        style={{
+                          position: "relative",
+                          left: 100,
+                          bottom: 30,
+                          height: 30,
+                          width: 30,
+                          color: "#5cb85c",
+                        }}
+                      >
+                        <button onClick={() => {}}>
+                          <EditIcon
+                            style={{ color: "black" }}
+                            onClick={() => {
+                              document.getElementById("shopLogo").click();
+                            }}
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className="h-24 w-24  border-dashed border-colorSecondary flex justify-center items-center"
+                      style={{
+                        borderStyle: "dashed",
+                        border: "1px dashed #000000",
+                      }}
+                    >
+                      <button
+                        className="h-24 w-24  border-dashed border-colorSecondary flex justify-center items-center"
+                        onClick={() => {
+                          document.getElementById("shopLogo").click();
+                        }}
+                      >
+                        <AddIcon />
+                      </button>
+                    </div>
+                  )}
+                  <div className="mt-2">
+                    {shopLayoutErrors.shopLogo && (
+                      <span style={{ color: "red" }} className="-mb-6">
+                        {shopLayoutErrors.shopLogo?.message}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="flex justify-center items-center font-bold  mb-3">
+                    Background
+                  </label>
+
+                  <input
+                    type="file"
+                    id="shopBackground"
+                    name="shopBackground"
+                    hidden
+                    {...shopLayoutRegister("shopBackground", {
+                      required:
+                        shopBackground === ""
+                          ? "shopBackground is required"
+                          : false,
+                      onChange: (e) => {
+                        if (e.target.files && e.target.files.length > 0) {
+                          onShopBackgroundPreviewImage(e);
+                        }
+                      },
+                    })}
+                  />
+
+                  {shopBackground !== "" ? (
+                    <div>
+                      <Image
+                        src={shopBackground}
+                        height="150px"
+                        alt="logoimg"
+                        width="200px"
+                      />
+                      <div
+                        className="bg-gray-300 rounded-full flex justify-center items-center"
+                        style={{
+                          position: "relative",
+                          left: 180,
+                          bottom: 30,
+                          height: 30,
+                          width: 30,
+                          color: "#5cb85c",
+                        }}
+                      >
+                        <EditIcon
+                          style={{ color: "black", cursor: "pointer" }}
+                          onClick={() =>
+                            document.getElementById("shopBackground").click()
+                          }
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      className="h-24 w-36  border-dashed border-colorSecondary flex justify-center items-center"
+                      style={{
+                        borderStyle: "dashed",
+                        border: "1px dashed #000000",
+                      }}
+                    >
+                      <button
+                        className="h-24 w-36  border-dashed border-colorSecondary flex justify-center items-center"
+                        onClick={() => {
+                          document.getElementById("shopBackground").click();
+                        }}
+                      >
+                        <AddIcon />
+                      </button>
+                    </div>
+                  )}
+                  <div className="mt-2">
+                    {shopLayoutErrors.shopBackground && (
+                      <span style={{ color: "red" }} className="-mb-6">
+                        {shopLayoutErrors.shopBackground?.message}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-5 items-center flex-col w-full container">
+                <h4 className="font-bold mb-3 flex justify-center items-center">
+                  Shop Images
+                </h4>
+
+                <div className="flex justify-center flex-col items-center">
+                  <div className="flex  justify-center">
+                    <Button
+                      variant="contained"
+                      component="label"
+                      className="w-full !capitalize !bg-gray-500 !rounded-3xl"
+                    >
+                      Choose Shop Images
+                      <input
+                        type="file"
+                        hidden
+                        multiple
+                        accept="image/*"
+                        {...shopLayoutRegister("shopImages", {
+                          required:
+                            shopImages.length === 0
+                              ? "Shop Image is required"
+                              : false,
+                          onChange: (e) => {
+                            updateShopImagesChange(e);
+                          },
+                        })}
+                      />
+                    </Button>
+                  </div>
+                  <div className="mt-2">
+                    {shopLayoutErrors.shopImages && (
+                      <span style={{ color: "red" }} className="-mb-6">
+                        {shopLayoutErrors.shopImages?.message}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <div className="flex  justify-center mt-10">
+                  <div className="flex flex-col w-full">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 place-items-center">
+                      {shopImages.map((image, index) => (
+                        <div key={index}>
+                          <Image
+                            src={image}
+                            alt="Product Preview"
+                            height={200}
+                            width={250}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="my-5 items-center flex-col w-full container">
+                <h4 className="font-bold mb-3 flex justify-center items-center">
+                  Shop Video
+                </h4>
+
+                <div className="flex justify-center flex-col items-center">
+                  <div className="flex  justify-center">
+                    <Button
+                      variant="contained"
+                      disabled={shopVideo !== ""}
+                      component="label"
+                      className="w-full !capitalize !bg-gray-500 !rounded-3xl"
+                    >
+                      Choose Shop Video
+                      <input
+                        type="file"
+                        id="shopVideo"
+                        name="shopVideo"
+                        accept="video/*"
+                        hidden
+                        controls
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files.length > 0) {
+                            onShopVideoPreview(e);
+                          }
+                        }}
+                      />
+                    </Button>
+                  </div>
+                </div>
+                {shopVideo !== "" && (
+                  <div className="flex  justify-center mt-10">
+                    <div className="flex flex-col w-full">
+                      <div className="grid grid-cols-1 place-items-center">
+                        <div>
+                          <video
+                            autoPlay
+                            style={{ width: "350px", height: "250px" }}
+                            controls
+                            src={shopVideo}
+                          ></video>
+                          <div
+                            className="bg-gray-300 rounded-full flex justify-center items-center cursor-pointer"
+                            style={{
+                              position: "relative",
+                              right: 10,
+                              bottom: 20,
+                              height: 30,
+                              width: 30,
+                              color: "#5cb85c",
+                            }}
+                          >
+                            <CancelIcon
+                              style={{ color: "black" }}
+                              onClick={() => {
+                                setShopVideo("");
+                                setUploadShopVideo("");
+                              }}
+                            />
+                          </div>
+                          <div
+                            className="bg-gray-300 rounded-full flex justify-center items-center cursor-pointer"
+                            style={{
+                              position: "relative",
+                              left: 335,
+                              bottom: 50,
+                              height: 30,
+                              width: 30,
+                              color: "#5cb85c",
+                            }}
+                          >
+                            <EditIcon
+                              style={{ color: "black" }}
+                              onClick={() => {
+                                document.getElementById("shopVideo").click();
+                              }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center justify-center">
+                <Box className="flex pt-2 mt-4 w-full container justify-end">
+                  <button
+                    type="submit"
+                    onClick={shopLayoutHandleSubmit(
+                      shopLayoutOnSubmit,
+                      shopLayoutOnError
+                    )}
+                    className="bg-colorPrimary hover:bg-colorPrimary mr-1 text-white px-9 py-3 rounded-xl font-semibold focus:outline-none focus:shadow-outline 
+                                     shadow-lg flex items-center justify-center"
+                  >
+                    {shopLayoutLoading && (
+                      <CircularProgress
+                        size={20}
+                        color="primary"
+                        sx={{ color: "white", mr: 1 }}
+                      />
+                    )}
+                    Update Shop Layout
+                  </button>
+                </Box>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
