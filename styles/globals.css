@@ -19,7 +19,6 @@ h6 {
 .container {
   @apply w-[95%] max-w-[1246px] 2xl:max-w-[1536px] mx-auto;
 }
-<<<<<<< HEAD
 input#file {
   display: inline-block;
   width: 100%;
@@ -29,16 +28,15 @@ input#file {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
-  background: url('https://cdn1.iconfinder.com/data/icons/hawcons/32/698394-icon-130-cloud-upload-512.png') center center no-repeat #e4e4e4;
+  background: url("https://cdn1.iconfinder.com/data/icons/hawcons/32/698394-icon-130-cloud-upload-512.png")
+    center center no-repeat #e4e4e4;
   border-radius: 20px;
   background-size: 60px 60px;
-  border:dashed;
+  border: dashed;
 }
-=======
 
 .MuiStepLabel-label.Mui-completed {
   color: #95539b;
   font-weight: 600;
   font-size: medium;
 }
->>>>>>> 99f03a3f7b4c22b8bb0e9b3f639ab44a0d58a497

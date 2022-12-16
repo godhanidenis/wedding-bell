@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { set, useForm } from "react-hook-form";
 import { uploadshopProductStart } from "../../redux/ducks/shopproductupload"
 import ShopProducts from "../../components/sections/product-section/shopProdcts";
-import { Fileupload } from "../../components/helper/Fileupload";
+import { MultipleImageUploadFile } from "../../services/MultipleImageUploadFile";
 const style = {
   position: 'absolute',
   top: '50%',
@@ -56,7 +56,7 @@ const vendor = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  
+
   const handleOpen = () => {
     setOpen(true);
   };
@@ -68,11 +68,11 @@ const vendor = () => {
     setcolorSelected(event.target.value);
   }
 
-  const submitForm = (data,e) => {
+  const submitForm = (data, e) => {
     // e.preventDefault();
     try {
       setLoading(true)
-      Fileupload(uploadShopImages)
+      MultipleImageUploadFile(uploadShopImages)
         .then((res) => {
           setLoading(true)
           dispatch(uploadshopProductStart({
@@ -114,7 +114,7 @@ const vendor = () => {
 
   return (
     <>
-    
+
       <div className="container mt-20 w-full">
         {/* <ShopHeaderSection shopDetails={shopDetails.data.shop} /> */}
         <div className=" flex rounded-xl  bg-[#F5F5F5]  overflow-visible">
@@ -143,11 +143,11 @@ const vendor = () => {
       <div className="bg-colorWhite pb-20 md:pb-28">
         <div className="grid grid-cols-8 gap-2 sm:gap-4 container mt-8">
           <div className="lg:col-span-2 hidden lg:block ">
-            <Filter 
-             byShop={byShop}
-             setByShop={setByShop}
-             setProductPageSkip={setProductPageSkip}
-             setShopPageSkip={setShopPageSkip}
+            <Filter
+              byShop={byShop}
+              setByShop={setByShop}
+              setProductPageSkip={setProductPageSkip}
+              setShopPageSkip={setShopPageSkip}
             />
           </div>
           <div className="col-span-8 lg:col-span-6 bg-[#F5F5F5] rounded-lg">
@@ -288,14 +288,14 @@ const vendor = () => {
                         </button>
                         <button
                           className="mx-4 bg-colorPrimary text-colorGrey text-lg p-2 px-6 rounded-lg ">
-                          {!loading   ? "Add Product" :(
+                          {!loading ? "Add Product" : (
                             <CircularProgress
                               size={20}
                               color="primary"
                               sx={{ color: "white", mr: 1 }}
                             />
                           )}
-          
+
                         </button>
                       </div>
                     </div>
@@ -305,7 +305,7 @@ const vendor = () => {
             </div>
             <div className="container">
               <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 place-items-center mb-10">
-                {shopProduct?.map((shopproduct,id) =>
+                {shopProduct?.map((shopproduct, id) =>
                   <ShopProducts product={shopproduct} key={id} />
                 )}
               </div>
