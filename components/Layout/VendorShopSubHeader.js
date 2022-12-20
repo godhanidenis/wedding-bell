@@ -40,10 +40,12 @@ const VendorShopSubHeader = () => {
           </li>
           <li
             className={`${setActiveLink(
-              "/vendor/products"
+              "/vendor/shop"
             )} text-base xl:text-lg`}
           >
-            <Link href="/vendor/products">Products</Link>
+            <Link href={`/vendor/shop/${userProfile.userCreatedShopId}`}>
+              Products
+            </Link>
           </li>
         </ul>
       </div>

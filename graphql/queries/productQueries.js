@@ -102,6 +102,7 @@ export const getProducts = async (payload) => {
       sort: payload.sort,
       search: payload.search,
     },
+    fetchPolicy: "no-cache",
   });
 
   return result;
@@ -123,6 +124,7 @@ export const getProductDetails = async (payload) => {
             }
             product_video
             product_color
+            product_type
             categoryInfo {
               id
               category_name

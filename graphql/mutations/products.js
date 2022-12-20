@@ -85,3 +85,53 @@ export const productLike = async (payload) => {
   });
   return results;
 };
+
+export const createProduct = async (payload) => {
+  const results = await client.mutate({
+    mutation: gql`
+      mutation CreateProduct($productInfo: createProductInput) {
+        createProduct(productInfo: $productInfo) {
+          message
+        }
+      }
+    `,
+    variables: {
+      productInfo: payload.productInfo,
+    },
+  });
+  return results;
+};
+
+export const updateProduct = async (payload) => {
+  const results = await client.mutate({
+    mutation: gql`
+      mutation UpdateProduct(
+        $updateProductId: String
+        $productInfo: updateProductInput
+      ) {
+        updateProduct(id: $updateProductId, productInfo: $productInfo) {
+          message
+        }
+      }
+    `,
+    variables: {
+      productInfo: payload.productInfo,
+      updateProductId: payload.id,
+    },
+  });
+  return results;
+};
+
+export const deleteProduct = async (payload) => {
+  const results = await client.mutate({
+    mutation: gql`
+      mutation DeleteProduct($deleteProductId: String) {
+        deleteProduct(id: $deleteProductId)
+      }
+    `,
+    variables: {
+      deleteProductId: payload.id,
+    },
+  });
+  return results;
+};

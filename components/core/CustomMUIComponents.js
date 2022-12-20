@@ -23,11 +23,7 @@ export const CustomTextField = styled(TextField)(({ theme }) => ({
     fontWeight: 400,
     fontSize: "16px",
     lineHeight: "30px",
-    color: "#544E5D",
-    opacity: 0.5,
-  },
-  [`& .MuiInputLabel-root.Mui-focused`]: {
-    color: "#544E5D",
+    color: "rgba(0, 0, 0, 0.6)",
   },
 }));
 

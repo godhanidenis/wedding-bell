@@ -91,7 +91,6 @@ const ShopPage = () => {
 
   const [shopVideo, setShopVideo] = useState("");
   const [uploadShopVideo, setUploadShopVideo] = useState("");
-  console.log("uploadShopImages::::", uploadShopVideo);
 
   const [individual, setIndividual] = useState(false);
 
@@ -906,7 +905,7 @@ const ShopPage = () => {
                   </h4>
 
                   <div className="flex justify-center flex-col items-center">
-                    <div className="flex  justify-center">
+                    <div className="flex justify-center">
                       <Button
                         variant="contained"
                         component="label"

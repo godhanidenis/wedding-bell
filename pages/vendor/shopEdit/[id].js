@@ -297,7 +297,7 @@ const ShopEdit = () => {
         );
 
         res.data.shop.shop_video &&
-          srcToFile(res.data.shop.shop_video, "profile.png", "image/png").then(
+          srcToFile(res.data.shop.shop_video, "profile.mp4", "video").then(
             function (file) {
               setUploadShopVideo(file);
             }
