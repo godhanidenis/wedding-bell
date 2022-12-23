@@ -152,7 +152,7 @@ const ProductDetail = ({ productDetails }) => {
                 </div>
                 <div className="col-span-3 border-2 flex justify-center items-center bg-colorWhite h-[75vh]">
                   <div style={{ width: "60%" }}>
-                    <ReactImageMagnify
+                    {/* <ReactImageMagnify
                       {...{
                         smallImage: {
                           alt: "Wristwatch by Ted Baker London",
@@ -169,7 +169,7 @@ const ProductDetail = ({ productDetails }) => {
                           height: "100%",
                         },
                       }}
-                    />
+                    /> */}
                   </div>
                 </div>
               </div>
